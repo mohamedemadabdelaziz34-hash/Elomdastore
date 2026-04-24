@@ -14,6 +14,11 @@
 
     <style>
         body { font-family: 'Cairo', sans-serif; background: #050505; color: white; }
+        .gold-gradient {
+            background: linear-gradient(135deg, #D4AF37 0%, #F1D592 50%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .order-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.1); transition: all 0.3s; }
         .order-card:hover { border-color: #D4AF37; background: rgba(212,175,55,0.02); }
     </style>
@@ -23,69 +28,113 @@
     <div class="container mx-auto">
         <header class="flex justify-between items-center mb-12 border-b border-white/10 pb-8">
             <div>
-                <h1 class="text-4xl font-black mb-2">لوحة التحكم <span class="text-[#D4AF37]">Premium</span></h1>
-                <p class="text-gray-500 text-sm italic">مراقبة الطلبات في الوقت الفعلي</p>
+                <h1 class="text-4xl font-black mb-1">لوحة التحكم <span class="gold-gradient italic">Admin</span></h1>
+                <p class="text-gray-500 text-sm italic">مراقبة وإدارة Elomda Store</p>
             </div>
             <div class="flex gap-4">
-                <button onclick="clearAllOrders()" class="text-red-500 border border-red-500/30 px-4 py-2 rounded text-xs hover:bg-red-500 hover:text-white transition-all">مسح كل الطلبات</button>
-                <a href="index.html" class="bg-white text-black px-6 py-2 rounded-full font-bold text-xs">العودة للمتجر</a>
+                <nav class="flex gap-4 bg-white/5 p-1 rounded-xl">
+                    <button onclick="showTab('orders')" class="tab-btn px-6 py-2 rounded-lg text-xs font-bold transition-all bg-[#D4AF37] text-black">الطلبات</button>
+                    <button onclick="showTab('products')" class="tab-btn px-6 py-2 rounded-lg text-xs font-bold transition-all hover:bg-white/10">المنتجات</button>
+                    <button onclick="showTab('customers')" class="tab-btn px-6 py-2 rounded-lg text-xs font-bold transition-all hover:bg-white/10">العملاء</button>
+                </nav>
+                <a href="index.html" class="bg-white text-black px-6 py-2 rounded-full font-bold text-xs flex items-center">العودة للمتجر</a>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Stats -->
-            <div class="lg:col-span-1 space-y-6">
-                <div class="order-card p-8 rounded-3xl">
-                    <span class="text-[10px] text-[#D4AF37] font-black uppercase tracking-widest block mb-2">Total Orders</span>
-                    <h2 id="total-count" class="text-6xl font-black">0</h2>
+        <!-- Orders Tab -->
+        <div id="tab-orders" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="order-card p-8 rounded-3xl">
+                        <span class="text-[10px] text-[#D4AF37] font-black uppercase tracking-widest block mb-2">Total Orders</span>
+                        <h2 id="total-count" class="text-6xl font-black">0</h2>
+                    </div>
+                    <div class="order-card p-8 rounded-3xl">
+                        <span class="text-[10px] text-green-500 font-black uppercase tracking-widest block mb-2">Estimated Revenue</span>
+                        <h2 id="total-revenue" class="text-4xl font-black italic">0 <span class="text-sm">ج.م</span></h2>
+                    </div>
                 </div>
-                <div class="order-card p-8 rounded-3xl">
-                    <span class="text-[10px] text-green-500 font-black uppercase tracking-widest block mb-2">Recent (24h)</span>
-                    <h2 id="recent-count" class="text-6xl font-black">0</h2>
+                <div class="lg:col-span-2">
+                    <div id="orders-list" class="space-y-4"></div>
                 </div>
             </div>
+        </div>
 
-            <!-- Orders Feed -->
-            <div class="lg:col-span-2">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold">آخر الطلبات المستلمة</h3>
-                    <span class="bg-[#D4AF37] text-black text-[10px] font-black px-3 py-1 rounded-full animate-pulse">LIVE UPDATE</span>
-                </div>
-                <div id="orders-list" class="space-y-4">
-                    <!-- Orders will appear here -->
-                    <div class="text-center py-20 text-gray-600 italic">جاري تحميل الطلبات...</div>
-                </div>
+        <!-- Products Tab -->
+        <div id="tab-products" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-black italic">إدارة المنتجات</h3>
+                <button onclick="location.href='index.html?admin=true'" class="gold-btn text-black px-6 py-2 rounded-full text-xs font-bold">+ إضافة منتج جديد</button>
+            </div>
+            <div id="admin-products-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+
+        <!-- Customers Tab -->
+        <div id="tab-customers" class="tab-content hidden">
+            <h3 class="text-2xl font-black italic mb-8">قائمة العملاء</h3>
+            <div class="bg-white/5 rounded-[2rem] overflow-hidden border border-white/10">
+                <table class="w-full text-right">
+                    <thead class="bg-black">
+                        <tr>
+                            <th class="p-6 text-xs uppercase tracking-widest text-[#D4AF37]">الاسم</th>
+                            <th class="p-6 text-xs uppercase tracking-widest text-[#D4AF37]">الهاتف</th>
+                            <th class="p-6 text-xs uppercase tracking-widest text-[#D4AF37]">إجمالي الطلبات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customers-list"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- Notification Sound -->
-    <audio id="notif-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
-
     <script>
-        // Same Firebase Config
+        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDummyKey_PleaseReplace",
-            authDomain: "fashion-store-dummy.firebaseapp.com",
-            projectId: "fashion-store-dummy",
-            storageBucket: "fashion-store-dummy.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef"
+            apiKey: "AIzaSyCAtnIh_yP_yJER42Qaaul3x9eDZFwAMbs",
+            authDomain: "elomda-store.firebaseapp.com",
+            projectId: "elomda-store",
+            storageBucket: "elomda-store.firebasestorage.app",
+            messagingSenderId: "518078514740",
+            appId: "1:518078514740:web:ff6032cca911355a0a2c61"
         };
-
-        if (firebaseConfig.apiKey !== "AIzaSyDummyKey_PleaseReplace") {
+        
+        let db;
+        let useFirebase = firebaseConfig.apiKey !== "YOUR_API_KEY";
+        if (useFirebase) {
             firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
         }
-        const db = firebase.firestore ? firebase.firestore() : null;
 
-        function renderOrders() {
-            // Load from LocalStorage (Sync mode)
-            const orders = JSON.parse(localStorage.getItem('alomda_orders') || '[]').reverse();
-            const list = document.getElementById('orders-list');
-            const total = document.getElementById('total-count');
+        let adminProducts = [];
+        let adminOrders = [];
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById('tab-' + tab).classList.remove('hidden');
             
-            total.innerText = orders.length;
-            document.getElementById('recent-count').innerText = orders.filter(o => (new Date().getTime() - o.timestamp) < 86400000).length;
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('bg-[#D4AF37]', 'text-black');
+                if (b.innerText.includes('الطلبات') && tab === 'orders' || 
+                    b.innerText.includes('المنتجات') && tab === 'products' || 
+                    b.innerText.includes('العملاء') && tab === 'customers') {
+                    b.classList.add('bg-[#D4AF37]', 'text-black');
+                }
+            });
+            
+            if (tab === 'products') renderAdminProducts();
+            if (tab === 'customers') renderCustomers();
+        }
+
+        function renderOrdersData(orders, products) {
+            const list = document.getElementById('orders-list');
+            document.getElementById('total-count').innerText = orders.length;
+            
+            let revenue = 0;
+            orders.forEach(o => {
+                const p = products.find(prod => prod.name === o.productName);
+                if (p) revenue += p.price;
+            });
+            document.getElementById('total-revenue').innerText = revenue.toLocaleString();
 
             if(orders.length === 0) {
                 list.innerHTML = `<div class="text-center py-20 text-gray-600 italic">لا توجد طلبات بعد.</div>`;
@@ -93,52 +142,112 @@
             }
 
             list.innerHTML = orders.map((order, index) => `
-                <div class="order-card p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate-[fadeIn_0.5s_ease-out]">
+                <div class="order-card p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div class="flex gap-4 items-center">
-                        <div class="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center text-[#D4AF37]">
-                            ${index + 1}
-                        </div>
+                        <div class="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center text-[#D4AF37] font-black">${orders.length - index}</div>
                         <div>
                             <h4 class="font-black text-lg">${order.productName}</h4>
                             <p class="text-xs text-[#D4AF37] font-bold">${order.customerName} - ${order.phone}</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs text-gray-500 mb-1">${new Date(order.timestamp).toLocaleString('ar-EG')}</p>
-                        <p class="text-[10px] font-bold bg-white/5 px-2 py-1 rounded border border-white/10 max-w-[200px] truncate">${order.address}</p>
+                        <p class="text-[10px] text-gray-500 mb-1">${new Date(order.timestamp).toLocaleString('ar-EG')}</p>
+                        <p class="text-[10px] font-bold bg-white/5 px-2 py-1 rounded border border-white/10">${order.address}</p>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Real-time listener for Firebase (if keys exist)
-        if (db) {
-            db.collection("orders").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
-                const firebaseOrders = [];
-                snapshot.forEach(doc => firebaseOrders.push(doc.data()));
+        async function loadAdminData() {
+            if (useFirebase) {
+                // Fetch products once
+                const prodsSnap = await db.collection('products').get();
+                adminProducts = prodsSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
                 
-                // Play sound if new order
-                if (snapshot.docChanges().some(c => c.type === "added")) {
-                    document.getElementById('notif-sound').play().catch(() => {});
-                }
-                
-                // For demo, we still use local but firebase would replace it here
-                renderOrders(); 
-            });
-        }
-
-        function clearAllOrders() {
-            if(confirm("هل أنت متأكد من مسح جميع الطلبات؟")) {
-                localStorage.removeItem('alomda_orders');
-                renderOrders();
+                // Real-time listener for orders
+                db.collection('orders').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                    adminOrders = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                    renderOrdersData(adminOrders, adminProducts);
+                    if (!document.getElementById('tab-customers').classList.contains('hidden')) {
+                        renderCustomersData(adminOrders);
+                    }
+                });
+            } else {
+                adminProducts = JSON.parse(localStorage.getItem('alomda_products') || '[]');
+                adminOrders = JSON.parse(localStorage.getItem('alomda_orders') || '[]').reverse();
+                renderOrdersData(adminOrders, adminProducts);
             }
         }
 
-        // Initial render
-        renderOrders();
-        
-        // Check for updates every 2 seconds (for LocalStorage sync across tabs)
-        setInterval(renderOrders, 2000);
+        function renderAdminProducts() {
+            const list = document.getElementById('admin-products-list');
+            list.innerHTML = adminProducts.map(p => `
+                <div class="order-card p-6 rounded-2xl">
+                    <div class="flex gap-4 mb-4">
+                        <img src="${p.images[0]}" class="w-20 h-20 object-cover rounded-xl">
+                        <div>
+                            <h4 class="font-bold">${p.name}</h4>
+                            <input type="number" onchange="updatePrice('${p.id}', this.value)" value="${p.price}" class="bg-black border border-white/10 rounded px-2 py-1 text-sm text-[#D4AF37] w-24"> ج.م
+                        </div>
+                    </div>
+                    <button onclick="deleteProduct('${p.id}')" class="text-red-500 text-[10px] uppercase font-bold hover:underline">حذف المنتج</button>
+                </div>
+            `).join('');
+        }
+
+        async function updatePrice(id, newPrice) {
+            if (useFirebase) {
+                await db.collection('products').doc(id.toString()).update({ price: parseInt(newPrice) });
+                adminProducts = adminProducts.map(p => p.id == id ? {...p, price: parseInt(newPrice)} : p);
+            } else {
+                adminProducts = adminProducts.map(p => p.id == id ? {...p, price: parseInt(newPrice)} : p);
+                localStorage.setItem('alomda_products', JSON.stringify(adminProducts));
+            }
+            alert('تم تحديث السعر بنجاح');
+        }
+
+        async function deleteProduct(id) {
+            if (confirm('هل أنت متأكد من الحذف؟')) {
+                if (useFirebase) {
+                    await db.collection('products').doc(id.toString()).delete();
+                    adminProducts = adminProducts.filter(p => p.id != id);
+                } else {
+                    adminProducts = adminProducts.filter(p => p.id != id);
+                    localStorage.setItem('alomda_products', JSON.stringify(adminProducts));
+                }
+                renderAdminProducts();
+            }
+        }
+
+        function renderCustomers() {
+            renderCustomersData(adminOrders);
+        }
+
+        function renderCustomersData(orders) {
+            const customers = {};
+            orders.forEach(o => {
+                if (!customers[o.phone]) {
+                    customers[o.phone] = { name: o.customerName, phone: o.phone, count: 0 };
+                }
+                customers[o.phone].count++;
+            });
+
+            const list = document.getElementById('customers-list');
+            list.innerHTML = Object.values(customers).map(c => `
+                <tr class="border-t border-white/5 hover:bg-white/5 transition-all">
+                    <td class="p-6 font-bold">${c.name}</td>
+                    <td class="p-6 text-gray-500">${c.phone}</td>
+                    <td class="p-6 text-[#D4AF37] font-black">${c.count}</td>
+                </tr>
+            `).join('');
+        }
+
+        loadAdminData();
+        if (!useFirebase) {
+            setInterval(loadAdminData, 5000);
+        }
     </script>
+</body>
+</html>
 </body>
 </html>
