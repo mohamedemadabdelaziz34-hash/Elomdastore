@@ -1,460 +1,523 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم | Elomda Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDKs moved to bottom -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم | Elomda Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --gold:#C9A84C;--gold-light:#F0D080;--dark:#0D0D0D;--dark2:#1A1A1A;--dark3:#242424;
+    --text:#F5F0E8;--text-muted:#9A9080;--border:#2E2E2E;--danger:#E24B4A;--success:#639922
+  }
+  body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;direction:rtl}
 
-    <style>
-        body { font-family: 'Cairo', sans-serif; background: #040814; color: white; }
-        .gold-gradient {
-            background: linear-gradient(135deg, #D4AF37 0%, #F1D592 50%, #D4AF37 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .glass-panel {
-            background: rgba(13, 21, 48, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        }
-        .order-card { 
-            background: linear-gradient(145deg, rgba(13,21,48,1) 0%, rgba(6,11,25,1) 100%); 
-            border: 1px solid rgba(212,175,55,0.1); 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
-        .order-card:hover { 
-            border-color: #D4AF37; 
-            box-shadow: 0 10px 30px -10px rgba(212,175,55,0.2);
-            transform: translateY(-2px);
-        }
-        .tab-btn.active {
-            background: linear-gradient(135deg, #D4AF37 0%, #B4941F 100%);
-            color: black;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #040814; }
-        ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 10px; }
-    </style>
+  /* LOGIN */
+  #login-screen{
+    position:fixed;inset:0;background:var(--dark);display:flex;align-items:center;justify-content:center;z-index:9999
+  }
+  .login-card{
+    background:var(--dark2);border:1px solid var(--border);border-radius:16px;padding:48px 40px;
+    width:380px;max-width:95vw;text-align:center
+  }
+  .login-logo{
+    width:60px;height:60px;background:linear-gradient(135deg,var(--gold),var(--gold-light));
+    border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:24px;font-weight:700;color:#000;margin:0 auto 24px
+  }
+  .login-title{font-size:22px;font-weight:700;margin-bottom:6px}
+  .login-sub{color:var(--text-muted);font-size:14px;margin-bottom:32px}
+  .login-input{
+    width:100%;padding:12px 16px;background:var(--dark3);border:1px solid var(--border);
+    border-radius:10px;color:var(--text);font-size:15px;font-family:'Cairo',sans-serif;
+    text-align:center;letter-spacing:4px;margin-bottom:16px;outline:none
+  }
+  .login-input:focus{border-color:var(--gold)}
+  .login-btn{
+    width:100%;padding:13px;background:var(--gold);border:none;border-radius:10px;
+    color:#000;font-size:16px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer
+  }
+  .login-btn:hover{background:var(--gold-light)}
+  .login-err{color:var(--danger);font-size:13px;margin-top:10px;min-height:18px}
+
+  /* SIDEBAR */
+  .sidebar{
+    position:fixed;right:0;top:0;bottom:0;width:240px;background:var(--dark2);
+    border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:100
+  }
+  .sidebar-logo{
+    padding:24px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)
+  }
+  .logo-icon{
+    width:40px;height:40px;background:linear-gradient(135deg,var(--gold),var(--gold-light));
+    border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:700;color:#000;flex-shrink:0
+  }
+  .logo-text{font-size:16px;font-weight:700}
+  .logo-sub{font-size:11px;color:var(--text-muted)}
+
+  nav{flex:1;padding:16px 12px}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;
+    cursor:pointer;font-size:14px;font-weight:500;color:var(--text-muted);margin-bottom:4px;
+    transition:.15s
+  }
+  .nav-item:hover{background:var(--dark3);color:var(--text)}
+  .nav-item.active{background:rgba(201,168,76,.12);color:var(--gold)}
+  .nav-icon{font-size:16px;width:20px;text-align:center}
+
+  .sidebar-footer{
+    padding:16px 12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;
+    cursor:pointer;border-radius:10px
+  }
+  .sidebar-footer:hover{background:var(--dark3)}
+  .avatar{
+    width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold-light));
+    border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#000
+  }
+  .admin-name{font-size:13px;font-weight:600}
+  .admin-role{font-size:11px;color:var(--text-muted)}
+
+  /* MAIN */
+  .main{margin-right:240px;padding:28px;min-height:100vh}
+  .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+  .page-title{font-size:20px;font-weight:700}
+  .page-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
+  .header-btn{
+    padding:10px 20px;background:var(--gold);border:none;border-radius:10px;
+    color:#000;font-size:14px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer;text-decoration:none;display:inline-block
+  }
+  .header-btn:hover{background:var(--gold-light)}
+
+  /* STATS */
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+  .stat-card{background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:20px}
+  .stat-label{font-size:12px;color:var(--text-muted);margin-bottom:8px}
+  .stat-val{font-size:26px;font-weight:700;margin-bottom:4px}
+  .stat-change{font-size:12px;color:var(--success)}
+  .stat-icon{font-size:22px;margin-bottom:12px}
+
+  /* CARDS & TABLES */
+  .card{background:var(--dark2);border:1px solid var(--border);border-radius:14px;margin-bottom:24px}
+  .card-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 20px;border-bottom:1px solid var(--border)
+  }
+  .card-title{font-size:15px;font-weight:700}
+  .badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(201,168,76,.15);color:var(--gold)}
+  table{width:100%;border-collapse:collapse}
+  th{text-align:right;padding:12px 20px;font-size:12px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border)}
+  td{padding:14px 20px;font-size:14px;border-bottom:1px solid var(--border)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(255,255,255,.02)}
+  .status{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600}
+  .status.pending{background:rgba(239,159,39,.15);color:#EF9F27}
+  .status.done{background:rgba(99,153,34,.15);color:#83C832}
+  .status.cancelled{background:rgba(226,75,74,.15);color:var(--danger)}
+  .action-btn{
+    padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;
+    font-family:'Cairo',sans-serif;cursor:pointer;border:1px solid var(--border);
+    background:transparent;color:var(--text-muted)
+  }
+  .action-btn:hover{border-color:var(--gold);color:var(--gold)}
+  .action-btn.del:hover{border-color:var(--danger);color:var(--danger)}
+
+  /* PRODUCTS */
+  .products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px}
+  .product-card{background:var(--dark3);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .product-img{height:140px;background:linear-gradient(135deg,#2a2a2a,#1a1a1a);display:flex;align-items:center;justify-content:center;font-size:40px}
+  .product-info{padding:14px}
+  .product-name{font-size:14px;font-weight:600;margin-bottom:4px}
+  .product-price{font-size:16px;font-weight:700;color:var(--gold);margin-bottom:10px}
+  .product-actions{display:flex;gap:8px}
+  .product-actions .action-btn{flex:1;text-align:center}
+
+  /* FORM */
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px}
+  .form-group{display:flex;flex-direction:column;gap:6px}
+  .form-group.full{grid-column:1/-1}
+  label{font-size:13px;color:var(--text-muted);font-weight:600}
+  input,select,textarea{
+    padding:11px 14px;background:var(--dark3);border:1px solid var(--border);
+    border-radius:10px;color:var(--text);font-size:14px;font-family:'Cairo',sans-serif;outline:none
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+  textarea{resize:vertical;min-height:80px}
+  select option{background:var(--dark2)}
+  .submit-btn{
+    grid-column:1/-1;padding:13px;background:var(--gold);border:none;border-radius:10px;
+    color:#000;font-size:15px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer
+  }
+  .submit-btn:hover{background:var(--gold-light)}
+
+  .page{display:none}
+  .page.active{display:block}
+  .empty-state{text-align:center;padding:40px;color:var(--text-muted);font-size:14px}
+</style>
 </head>
+<body>
 
-<body class="p-8">
-    <div class="container mx-auto">
-        <header class="glass-panel flex flex-col md:flex-row justify-between items-center mb-12 p-6 rounded-[2rem] sticky top-4 z-50">
-            <div class="text-center md:text-right mb-6 md:mb-0">
-                <h1 class="text-3xl md:text-4xl font-black mb-1">لوحة التحكم <span class="gold-gradient italic">Premium</span></h1>
-                <p class="text-gray-400 text-xs tracking-widest uppercase">Elomda Store Management</p>
-            </div>
-            <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                <nav class="flex gap-2 bg-[#040814]/50 p-2 rounded-2xl border border-white/5 overflow-x-auto w-full md:w-auto">
-                    <button onclick="showTab('orders')" class="tab-btn active px-6 py-3 rounded-xl text-xs font-bold transition-all flex-1 md:flex-none">الطلبات</button>
-                    <button onclick="showTab('products')" class="tab-btn px-6 py-3 rounded-xl text-xs font-bold transition-all hover:bg-white/5 text-gray-400 flex-1 md:flex-none">المنتجات</button>
-                    <button onclick="showTab('customers')" class="tab-btn px-6 py-3 rounded-xl text-xs font-bold transition-all hover:bg-white/5 text-gray-400 flex-1 md:flex-none">العملاء</button>
-                </nav>
-                <a href="index.html" class="bg-white/10 border border-white/20 hover:bg-white hover:text-black transition-all text-white px-6 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-                    زيارة المتجر
-                </a>
-            </div>
-        </header>
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">E</div>
+    <div class="login-title">لوحة تحكم Elomda</div>
+    <div class="login-sub">أدخل كلمة المرور للدخول</div>
+    <input type="password" class="login-input" id="pw-input" placeholder="••••••" maxlength="20" />
+    <button class="login-btn" onclick="doLogin()">دخول</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
 
-        <!-- Orders Tab -->
-        <div id="tab-orders" class="tab-content">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-1 space-y-6">
-                    <div class="glass-panel p-8 rounded-[2rem] relative overflow-hidden group">
-                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full blur-3xl group-hover:bg-[#D4AF37]/20 transition-all"></div>
-                        <span class="text-[10px] text-[#D4AF37] font-black uppercase tracking-widest block mb-4 flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> إجمالي الطلبات</span>
-                        <h2 id="total-count" class="text-7xl font-black text-white">0</h2>
-                    </div>
-                    <div class="glass-panel p-8 rounded-[2rem] relative overflow-hidden group">
-                        <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-green-500/10 rounded-full blur-3xl group-hover:bg-green-500/20 transition-all"></div>
-                        <span class="text-[10px] text-green-400 font-black uppercase tracking-widest block mb-4 flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> الأرباح التقديرية</span>
-                        <h2 id="total-revenue" class="text-4xl lg:text-5xl font-black italic gold-gradient">0 <span class="text-sm text-gray-500 not-italic">ج.م</span></h2>
-                    </div>
-                </div>
-                <div class="lg:col-span-2">
-                    <div id="orders-list" class="space-y-4">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Products Tab -->
-        <div id="tab-products" class="tab-content hidden">
-            <div class="flex justify-between items-center mb-8">
-                <h3 class="text-2xl font-black italic">إدارة المنتجات</h3>
-                <button onclick="location.href='index.html?admin=true'" class="gold-btn text-black px-6 py-2 rounded-full text-xs font-bold">+ إضافة منتج جديد</button>
-            </div>
-            <div id="admin-products-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[300px]">
-            </div>
-        </div>
-
-        <!-- Customers Tab -->
-        <div id="tab-customers" class="tab-content hidden">
-            <h3 class="text-2xl font-black italic mb-8">قائمة العملاء</h3>
-            <div class="bg-white/5 rounded-[2rem] overflow-hidden border border-white/10">
-                <table class="w-full text-right">
-                    <thead class="bg-[#040814]">
-                        <tr>
-                            <th class="p-6 text-xs uppercase tracking-widest text-[#D4AF37]">الاسم</th>
-                            <th class="p-6 text-xs uppercase tracking-widest text-[#D4AF37]">الهاتف</th>
-                            <th class="p-6 text-xs uppercase tracking-widest text-[#D4AF37]">إجمالي الطلبات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="customers-list"></tbody>
-                </table>
-            </div>
-        </div>
-    <!-- Edit Product Modal -->
-    <div id="edit-product-modal" class="fixed inset-0 z-[400] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="closeEditProduct()"></div>
-        <div class="bg-[#111] border border-white/10 rounded-[3rem] w-full max-w-lg relative overflow-y-auto max-h-[90vh] shadow-2xl">
-            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-[#040814]">
-                <button onclick="closeEditProduct()" class="text-white/50 hover:text-red-500 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-                <h3 class="text-xl font-bold tracking-widest uppercase gold-gradient">تعديل المنتج</h3>
-                <div class="w-6"></div>
-            </div>
-            <form id="edit-product-form" onsubmit="handleEditProduct(event)" class="p-12 space-y-6 text-right">
-                <input type="hidden" id="edit-prod-id">
-                <input type="text" id="edit-prod-name" required class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm focus:border-[#D4AF37] outline-none" placeholder="اسم المنتج">
-                <input type="number" id="edit-prod-price" required class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm focus:border-[#D4AF37] outline-none" placeholder="السعر (ج.م)">
-                
-                <div class="space-y-4">
-                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">صور المنتج (سيتم استبدال الصور الحالية إذا قمت بالرفع):</p>
-                    <div class="flex gap-4">
-                        <button type="button" onclick="document.getElementById('edit-prod-file').click()" class="flex-1 bg-white/5 border border-white/10 py-4 rounded-2xl text-xs hover:border-[#D4AF37] transition-all flex items-center justify-center gap-2">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                            رفع صور جديدة
-                        </button>
-                        <input type="file" id="edit-prod-file" accept="image/*" multiple class="hidden" onchange="previewEditFile(this)">
-                    </div>
-                    <input type="url" id="edit-prod-img" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm focus:border-[#D4AF37] outline-none" placeholder="أو ضع رابط صورة جديدة هنا">
-                    
-                    <div id="edit-image-preview" class="hidden grid grid-cols-3 gap-2 mt-2 relative">
-                    </div>
-                    <button type="button" onclick="removeEditPreview()" id="remove-edit-preview-btn" class="hidden text-red-500 text-xs mt-2 w-full text-center hover:underline">مسح الصور المرفوعة</button>
-                </div>
-
-                <button type="submit" class="gold-btn text-black w-full py-6 font-black text-xs uppercase tracking-[0.5em]">حفظ التعديلات</button>
-            </form>
-        </div>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">E</div>
+    <div>
+      <div class="logo-text">Elomda</div>
+      <div class="logo-sub">لوحة التحكم</div>
     </div>
+  </div>
+  <nav>
+    <div class="nav-item active" onclick="showPage('dashboard',this)">
+      <span class="nav-icon">📊</span> الإحصائيات
     </div>
+    <div class="nav-item" onclick="showPage('orders',this)">
+      <span class="nav-icon">📦</span> الطلبات
+    </div>
+    <div class="nav-item" onclick="showPage('products',this)">
+      <span class="nav-icon">👗</span> المنتجات
+    </div>
+    <div class="nav-item" onclick="showPage('add-product',this)">
+      <span class="nav-icon">➕</span> إضافة منتج
+    </div>
+    <div class="nav-item" onclick="showPage('customers',this)">
+      <span class="nav-icon">👥</span> العملاء
+    </div>
+  </nav>
+  <div class="sidebar-footer" onclick="logout()">
+    <div class="avatar">م</div>
+    <div>
+      <div class="admin-name">المدير</div>
+      <div class="admin-role">تسجيل الخروج</div>
+    </div>
+  </div>
+</div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<!-- MAIN CONTENT -->
+<div class="main">
 
-    <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCAtnIh_yP_yJER42Qaaul3x9eDZFwAMbs",
-            authDomain: "elomda-store.firebaseapp.com",
-            projectId: "elomda-store",
-            storageBucket: "elomda-store.firebasestorage.app",
-            messagingSenderId: "518078514740",
-            appId: "1:518078514740:web:ff6032cca911355a0a2c61"
-        };
-        
-        let db;
-        let useFirebase = firebaseConfig.apiKey !== "YOUR_API_KEY";
-        if (useFirebase) {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-        }
+  <!-- DASHBOARD PAGE -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div>
+        <div class="page-title">لوحة الإحصائيات</div>
+        <div class="page-sub">مرحباً بك في متجر Elomda</div>
+      </div>
+      <a href="index.html" class="header-btn">🏪 زيارة المتجر</a>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-label">إجمالي الطلبات</div>
+        <div class="stat-val" id="stat-orders">0</div>
+        <div class="stat-change">طلب مسجل</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-label">إجمالي الأرباح</div>
+        <div class="stat-val" id="stat-revenue">0 ج.م</div>
+        <div class="stat-change">إجمالي المبيعات</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-label">العملاء</div>
+        <div class="stat-val" id="stat-customers">0</div>
+        <div class="stat-change">عميل مسجل</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👗</div>
+        <div class="stat-label">المنتجات</div>
+        <div class="stat-val" id="stat-products">0</div>
+        <div class="stat-change">منتج في المتجر</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">آخر الطلبات</div>
+        <span class="badge" id="orders-badge">0 طلب</span>
+      </div>
+      <div id="dashboard-orders-table"></div>
+    </div>
+  </div>
 
-        let adminProducts = [];
-        let adminOrders = [];
+  <!-- ORDERS PAGE -->
+  <div class="page" id="page-orders">
+    <div class="page-header">
+      <div>
+        <div class="page-title">إدارة الطلبات</div>
+        <div class="page-sub">كل الطلبات الواردة</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">قائمة الطلبات</div>
+        <span class="badge" id="orders-badge2">0 طلب</span>
+      </div>
+      <div id="orders-table-cont"></div>
+    </div>
+  </div>
 
-        function showTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById('tab-' + tab).classList.remove('hidden');
-            
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('active', 'text-gray-400');
-                if (b.innerText.includes('الطلبات') && tab === 'orders' || 
-                    b.innerText.includes('المنتجات') && tab === 'products' || 
-                    b.innerText.includes('العملاء') && tab === 'customers') {
-                    b.classList.add('active');
-                } else {
-                    b.classList.add('text-gray-400');
-                }
-            });
-            
-            if (tab === 'products') renderAdminProducts();
-            if (tab === 'customers') renderCustomers();
-        }
+  <!-- PRODUCTS PAGE -->
+  <div class="page" id="page-products">
+    <div class="page-header">
+      <div>
+        <div class="page-title">المنتجات</div>
+        <div class="page-sub">إدارة منتجات المتجر</div>
+      </div>
+      <button class="header-btn" onclick="showPage('add-product',document.querySelectorAll('.nav-item')[3])">➕ منتج جديد</button>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">كل المنتجات</div></div>
+      <div id="products-cont" class="products-grid"></div>
+    </div>
+  </div>
 
-        function renderOrdersData(orders, products) {
-            const list = document.getElementById('orders-list');
-            document.getElementById('total-count').innerText = orders.length;
-            
-            let revenue = 0;
-            orders.forEach(o => {
-                if (o.totalPrice) {
-                    revenue += o.totalPrice;
-                } else {
-                    const p = products.find(prod => prod.name === o.productName);
-                    if (p) revenue += p.price;
-                }
-            });
-            document.getElementById('total-revenue').innerText = revenue.toLocaleString();
+  <!-- ADD PRODUCT PAGE -->
+  <div class="page" id="page-add-product">
+    <div class="page-header">
+      <div>
+        <div class="page-title">إضافة منتج جديد</div>
+        <div class="page-sub">أضف منتجاً جديداً للمتجر</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">بيانات المنتج</div></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>اسم المنتج</label>
+          <input type="text" id="p-name" placeholder="مثال: فستان صيفي أنيق" />
+        </div>
+        <div class="form-group">
+          <label>السعر (جنيه)</label>
+          <input type="number" id="p-price" placeholder="0" />
+        </div>
+        <div class="form-group">
+          <label>القسم</label>
+          <select id="p-cat">
+            <option>ملابس نسائية</option>
+            <option>ملابس رجالية</option>
+            <option>أطفال</option>
+            <option>إكسسوارات</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>الكمية المتاحة</label>
+          <input type="number" id="p-stock" placeholder="0" />
+        </div>
+        <div class="form-group">
+          <label>الألوان المتاحة</label>
+          <input type="text" id="p-colors" placeholder="أبيض، أسود، بيج" />
+        </div>
+        <div class="form-group">
+          <label>المقاسات المتاحة</label>
+          <input type="text" id="p-sizes" placeholder="S, M, L, XL" />
+        </div>
+        <div class="form-group full">
+          <label>وصف المنتج</label>
+          <textarea id="p-desc" placeholder="اكتب وصفاً مفصلاً للمنتج..."></textarea>
+        </div>
+        <button class="submit-btn" onclick="addProduct()">✅ إضافة المنتج</button>
+      </div>
+    </div>
+  </div>
 
-            if(orders.length === 0) {
-                list.innerHTML = `<div class="text-center py-20 text-gray-600 italic">لا توجد طلبات بعد.</div>`;
-                return;
-            }
+  <!-- CUSTOMERS PAGE -->
+  <div class="page" id="page-customers">
+    <div class="page-header">
+      <div>
+        <div class="page-title">العملاء</div>
+        <div class="page-sub">قائمة العملاء المسجلين</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">قائمة العملاء</div>
+        <span class="badge" id="customers-badge">0 عميل</span>
+      </div>
+      <div id="customers-table-cont"></div>
+    </div>
+  </div>
 
-            list.innerHTML = orders.map((order, index) => `
-                <div class="order-card p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div class="flex gap-4 items-center">
-                        <div class="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center text-[#D4AF37] font-black">${orders.length - index}</div>
-                        <div>
-                            <h4 class="font-black text-lg">${order.productName} <span class="text-sm font-normal text-gray-400">(عدد ${order.quantity || 1})</span></h4>
-                            <p class="text-xs text-[#D4AF37] font-bold">${order.customerName} - ${order.phone} | <span class="text-white">${order.totalPrice ? order.totalPrice.toLocaleString() : 'N/A'} ج.م</span></p>
-                            ${order.size && order.color ? `<p class="text-[10px] text-gray-400 mt-1">المقاس: ${order.size} - اللون: ${order.color}</p>` : ''}
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[10px] text-gray-500 mb-1">${new Date(order.timestamp).toLocaleString('ar-EG')}</p>
-                        <p class="text-[10px] font-bold bg-white/5 px-2 py-1 rounded border border-white/10">${order.address}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
+</div><!-- /main -->
 
-        let unseenOrdersCount = 0;
-        const notifSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+<script>
+// ====== كلمة المرور - غيّرها لكلمة سرية خاصة بك ======
+const ADMIN_PASSWORD = "elomda2026";
+// ======================================================
 
-        // Reset title when admin clicks anywhere
-        window.addEventListener('click', () => {
-            if (unseenOrdersCount > 0) {
-                unseenOrdersCount = 0;
-                document.title = 'لوحة التحكم | Elomda Admin';
-            }
-        });
+let orders = [];
+let products = [];
 
-        const defaultProducts = [
-            { id: 1, name: 'بليزر مخملي ملكي - إصدار خاص', price: 2850, images: ['https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=60&auto=format'] },
-            { id: 2, name: 'قميص حرير إيطالي - أسود فاحم', price: 1250, images: ['https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&q=60&auto=format'] },
-            { id: 3, name: 'حذاء جلود طبيعية - يدوي الصنع', price: 3450, images: ['https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=60&auto=format'] },
-            { id: 4, name: 'جينز سليم - بريميوم دنيم', price: 1650, images: ['https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=60&auto=format'] }
-        ];
+function doLogin() {
+  const v = document.getElementById('pw-input').value;
+  if (v === ADMIN_PASSWORD) {
+    document.getElementById('login-screen').style.display = 'none';
+    renderAll();
+  } else {
+    document.getElementById('login-err').textContent = 'كلمة المرور غلط، حاول تاني';
+    document.getElementById('pw-input').value = '';
+  }
+}
 
-        async function loadAdminData() {
-            adminProducts = JSON.parse(localStorage.getItem('alomda_products') || '[]');
-            if (adminProducts.length === 0) adminProducts = defaultProducts;
-            adminOrders = JSON.parse(localStorage.getItem('alomda_orders') || '[]').reverse();
-            
-            renderOrdersData(adminOrders, adminProducts);
-            if (!document.getElementById('tab-products').classList.contains('hidden')) renderAdminProducts();
-            if (!document.getElementById('tab-customers').classList.contains('hidden')) renderCustomersData(adminOrders);
+document.getElementById('pw-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
 
-            if (useFirebase) {
-                db.collection('products').get().then(prodsSnap => {
-                    adminProducts = prodsSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                    if (adminProducts.length === 0) adminProducts = defaultProducts;
-                    localStorage.setItem('alomda_products', JSON.stringify(adminProducts));
-                    if (!document.getElementById('tab-products').classList.contains('hidden')) {
-                        renderAdminProducts();
-                    }
-                });
-                
-                let isFirstLoad = true;
-                db.collection('orders').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-                    adminOrders = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                    localStorage.setItem('alomda_orders', JSON.stringify(adminOrders));
-                    renderOrdersData(adminOrders, adminProducts);
-                    if (!document.getElementById('tab-customers').classList.contains('hidden')) {
-                        renderCustomersData(adminOrders);
-                    }
-                    
-                    if (!isFirstLoad) {
-                        snapshot.docChanges().forEach(change => {
-                            if (change.type === 'added') {
-                                unseenOrdersCount++;
-                                document.title = `(${unseenOrdersCount}) طلب جديد! | Elomda Admin`;
-                                notifSound.play().catch(e => console.log('Audio prevented'));
-                            }
-                        });
-                    }
-                    isFirstLoad = false;
-                });
-            }
-        }
+function logout() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('pw-input').value = '';
+  document.getElementById('login-err').textContent = '';
+}
 
-        function renderAdminProducts() {
-            const list = document.getElementById('admin-products-list');
-            list.innerHTML = adminProducts.map(p => `
-                <div class="order-card p-6 rounded-2xl">
-                    <div class="flex gap-4 mb-4">
-                        <img src="${p.images && p.images.length > 0 ? p.images[0] : ''}" class="w-20 h-20 object-cover rounded-xl">
-                        <div>
-                            <h4 class="font-bold">${p.name}</h4>
-                            <input type="number" onchange="updatePrice('${p.id}', this.value)" value="${p.price}" class="bg-[#040814] border border-white/10 rounded px-2 py-1 text-sm text-[#D4AF37] w-24"> ج.م
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center border-t border-white/5 pt-4 mt-2">
-                        <button onclick="editProduct('${p.id}')" class="text-blue-400 text-[10px] uppercase font-bold hover:underline">تعديل</button>
-                        <button onclick="deleteProduct('${p.id}')" class="text-red-500 text-[10px] uppercase font-bold hover:underline">حذف المنتج</button>
-                    </div>
-                </div>
-            `).join('');
-        }
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+  renderAll();
+}
 
-        async function updatePrice(id, newPrice) {
-            if (useFirebase) {
-                await db.collection('products').doc(id.toString()).update({ price: parseInt(newPrice) });
-                adminProducts = adminProducts.map(p => p.id == id ? {...p, price: parseInt(newPrice)} : p);
-            } else {
-                adminProducts = adminProducts.map(p => p.id == id ? {...p, price: parseInt(newPrice)} : p);
-                localStorage.setItem('alomda_products', JSON.stringify(adminProducts));
-            }
-            alert('تم تحديث السعر بنجاح');
-        }
+function loadData() {
+  orders = JSON.parse(localStorage.getItem('elomdaOrders') || '[]');
+  products = JSON.parse(localStorage.getItem('elomdaProducts') || '[]');
+}
 
-        async function deleteProduct(id) {
-            if (confirm('هل أنت متأكد من الحذف؟')) {
-                if (useFirebase) {
-                    await db.collection('products').doc(id.toString()).delete();
-                    adminProducts = adminProducts.filter(p => p.id != id);
-                } else {
-                    adminProducts = adminProducts.filter(p => p.id != id);
-                    localStorage.setItem('alomda_products', JSON.stringify(adminProducts));
-                }
-                renderAdminProducts();
-            }
-        }
+function renderAll() {
+  loadData();
+  const customers = [...new Map(orders.map(o => [o.phone, {
+    name: o.name, phone: o.phone, city: o.city,
+    orders: orders.filter(x => x.phone === o.phone).length
+  }])).values()];
 
-        let editUploadedImagesBase64 = [];
-        let currentEditImages = [];
+  document.getElementById('stat-orders').textContent = orders.length;
+  document.getElementById('stat-revenue').textContent = orders.reduce((s, o) => s + (+o.total || 0), 0).toLocaleString() + ' ج.م';
+  document.getElementById('stat-customers').textContent = customers.length;
+  document.getElementById('stat-products').textContent = products.length;
+  document.getElementById('orders-badge').textContent = orders.length + ' طلب';
+  document.getElementById('orders-badge2').textContent = orders.length + ' طلب';
+  document.getElementById('customers-badge').textContent = customers.length + ' عميل';
 
-        function previewEditFile(input) {
-            const previewContainer = document.getElementById('edit-image-preview');
-            const removeBtn = document.getElementById('remove-edit-preview-btn');
-            previewContainer.innerHTML = ''; 
-            editUploadedImagesBase64 = [];
-            
-            if (input.files && input.files.length > 0) {
-                previewContainer.classList.remove('hidden');
-                removeBtn.classList.remove('hidden');
-                document.getElementById('edit-prod-img').value = ''; 
-                
-                Array.from(input.files).forEach((file) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        editUploadedImagesBase64.push(e.target.result);
-                        const div = document.createElement('div');
-                        div.className = "relative aspect-square rounded-xl overflow-hidden border border-[#D4AF37]/30";
-                        div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-                        previewContainer.appendChild(div);
-                    }
-                    reader.readAsDataURL(file);
-                });
-            } else {
-                previewContainer.classList.add('hidden');
-                removeBtn.classList.add('hidden');
-            }
-        }
+  renderOrdersTable('dashboard-orders-table', orders.slice(-5).reverse());
+  renderOrdersTable('orders-table-cont', orders.slice().reverse());
+  renderProducts();
+  renderCustomers(customers);
+}
 
-        function removeEditPreview() {
-            const previewContainer = document.getElementById('edit-image-preview');
-            const removeBtn = document.getElementById('remove-edit-preview-btn');
-            previewContainer.classList.add('hidden');
-            removeBtn.classList.add('hidden');
-            previewContainer.innerHTML = '';
-            document.getElementById('edit-prod-file').value = '';
-            editUploadedImagesBase64 = [];
-        }
+function renderOrdersTable(id, list) {
+  const el = document.getElementById(id);
+  if (!list.length) { el.innerHTML = '<div class="empty-state">لا توجد طلبات بعد</div>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr>
+      <th>#</th><th>الاسم</th><th>الهاتف</th><th>المنتج</th><th>الإجمالي</th><th>الحالة</th><th>إجراء</th>
+    </tr></thead>
+    <tbody>${list.map((o, i) => {
+      const realIdx = orders.indexOf(o);
+      return `<tr>
+        <td style="color:var(--text-muted);font-size:12px">${o.id || i + 1}</td>
+        <td style="font-weight:600">${o.name || '-'}</td>
+        <td style="direction:ltr;text-align:right">${o.phone || '-'}</td>
+        <td style="color:var(--text-muted)">${o.product || '-'}</td>
+        <td style="color:var(--gold);font-weight:700">${(+o.total || 0).toLocaleString()} ج.م</td>
+        <td><span class="status ${o.status === 'done' ? 'done' : o.status === 'cancelled' ? 'cancelled' : 'pending'}">
+          ${o.status === 'done' ? 'تم التسليم' : o.status === 'cancelled' ? 'ملغي' : 'قيد التنفيذ'}
+        </span></td>
+        <td style="display:flex;gap:6px">
+          <button class="action-btn" onclick="changeStatus(${realIdx})">تغيير الحالة</button>
+          <button class="action-btn del" onclick="deleteOrder(${realIdx})">حذف</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
 
-        function editProduct(id) {
-            const product = adminProducts.find(p => p.id == id);
-            if (!product) return;
-            
-            document.getElementById('edit-prod-id').value = product.id;
-            document.getElementById('edit-prod-name').value = product.name;
-            document.getElementById('edit-prod-price').value = product.price;
-            currentEditImages = product.images || [];
-            removeEditPreview();
-            
-            document.getElementById('edit-product-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
+function renderProducts() {
+  const el = document.getElementById('products-cont');
+  if (!products.length) {
+    el.innerHTML = '<div class="empty-state" style="grid-column:1/-1">لا توجد منتجات. أضف منتجاً من القائمة الجانبية.</div>';
+    return;
+  }
+  el.innerHTML = products.map((p, i) => `
+    <div class="product-card">
+      <div class="product-img">👗</div>
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">${(+p.price).toLocaleString()} ج.م</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">${p.cat}</div>
+        <div class="product-actions">
+          <button class="action-btn del" onclick="deleteProduct(${i})">حذف</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
 
-        function closeEditProduct() {
-            document.getElementById('edit-product-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
+function renderCustomers(customers) {
+  const el = document.getElementById('customers-table-cont');
+  if (!customers.length) { el.innerHTML = '<div class="empty-state">لا يوجد عملاء بعد</div>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr><th>الاسم</th><th>الهاتف</th><th>المحافظة</th><th>عدد الطلبات</th></tr></thead>
+    <tbody>${customers.map(c => `<tr>
+      <td style="font-weight:600">${c.name || '-'}</td>
+      <td style="direction:ltr;text-align:right">${c.phone || '-'}</td>
+      <td>${c.city || '-'}</td>
+      <td><span class="badge">${c.orders}</span></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
 
-        async function handleEditProduct(e) {
-            e.preventDefault();
-            const id = document.getElementById('edit-prod-id').value;
-            const urlInput = document.getElementById('edit-prod-img');
-            
-            let imagesToSave = currentEditImages;
-            if (editUploadedImagesBase64.length > 0) {
-                imagesToSave = editUploadedImagesBase64;
-            } else if (urlInput.value) {
-                imagesToSave = [urlInput.value];
-            }
+function changeStatus(i) {
+  const states = ['pending', 'done', 'cancelled'];
+  const cur = orders[i].status || 'pending';
+  orders[i].status = states[(states.indexOf(cur) + 1) % 3];
+  localStorage.setItem('elomdaOrders', JSON.stringify(orders));
+  renderAll();
+}
 
-            const updatedData = {
-                name: document.getElementById('edit-prod-name').value,
-                price: parseInt(document.getElementById('edit-prod-price').value),
-                images: imagesToSave
-            };
+function deleteOrder(i) {
+  if (confirm('هل تريد حذف هذا الطلب؟')) {
+    orders.splice(i, 1);
+    localStorage.setItem('elomdaOrders', JSON.stringify(orders));
+    renderAll();
+  }
+}
 
-            if (useFirebase) {
-                await db.collection('products').doc(id.toString()).update(updatedData);
-                adminProducts = adminProducts.map(p => p.id == id ? {...p, ...updatedData} : p);
-            } else {
-                adminProducts = adminProducts.map(p => p.id == id ? {...p, ...updatedData} : p);
-                localStorage.setItem('alomda_products', JSON.stringify(adminProducts));
-            }
-            
-            renderAdminProducts();
-            closeEditProduct();
-            alert('تم تعديل المنتج بنجاح');
-        }
+function addProduct() {
+  const name = document.getElementById('p-name').value.trim();
+  const price = document.getElementById('p-price').value;
+  if (!name || !price) { alert('من فضلك أدخل اسم المنتج والسعر'); return; }
+  products.push({
+    name, price,
+    cat: document.getElementById('p-cat').value,
+    stock: document.getElementById('p-stock').value,
+    colors: document.getElementById('p-colors').value,
+    sizes: document.getElementById('p-sizes').value,
+    desc: document.getElementById('p-desc').value,
+    id: Date.now()
+  });
+  localStorage.setItem('elomdaProducts', JSON.stringify(products));
+  ['p-name', 'p-price', 'p-stock', 'p-colors', 'p-sizes', 'p-desc'].forEach(id => document.getElementById(id).value = '');
+  alert('✅ تم إضافة المنتج بنجاح!');
+  renderAll();
+}
 
-        function renderCustomers() {
-            renderCustomersData(adminOrders);
-        }
-
-        function renderCustomersData(orders) {
-            const customers = {};
-            orders.forEach(o => {
-                if (!customers[o.phone]) {
-                    customers[o.phone] = { name: o.customerName, phone: o.phone, count: 0 };
-                }
-                customers[o.phone].count++;
-            });
-
-            const list = document.getElementById('customers-list');
-            list.innerHTML = Object.values(customers).map(c => `
-                <tr class="border-t border-white/5 hover:bg-white/5 transition-all">
-                    <td class="p-6 font-bold">${c.name}</td>
-                    <td class="p-6 text-gray-500">${c.phone}</td>
-                    <td class="p-6 text-[#D4AF37] font-black">${c.count}</td>
-                </tr>
-            `).join('');
-        }
-
-        loadAdminData();
-        if (!useFirebase) {
-            setInterval(loadAdminData, 5000);
-        }
-    </script>
-</body>
-</html>
+function deleteProduct(i) {
+  if (confirm('هل تريد حذف هذا المنتج؟')) {
+    products.splice(i, 1);
+    localStorage.setItem('elomdaProducts', JSON.stringify(products));
+    renderAll();
+  }
+}
+</script>
 </body>
 </html>
