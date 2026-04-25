@@ -17,14 +17,10 @@
       gtag('config', 'G-XXXXXXXXXX');
     </script>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
     <style>
         :root {
             --gold: #D4AF37;
-            --darker: #050505;
+            --darker: #060B19;
             --glass: rgba(255, 255, 255, 0.03);
             --border: rgba(212, 175, 55, 0.2);
         }
@@ -44,7 +40,11 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
+        .silver-gradient {
+            background: linear-gradient(135deg, #C0C0C0 0%, #FFFFFF 50%, #A9A9A9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .gold-btn {
             background: linear-gradient(135deg, #D4AF37 0%, #B4941F 100%);
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -53,8 +53,16 @@
         }
 
         .gold-btn:hover {
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
-            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+        .silver-btn {
+            background: linear-gradient(135deg, #C0C0C0 0%, #FFFFFF 50%, #A9A9A9 100%);
+            color: #040814;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .silver-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
         }
 
         .glass-nav {
@@ -92,6 +100,48 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--darker); }
         ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+        /* Premium Scroll Reveal */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-up.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Luxury Custom Cursor */
+        @media (hover: hover) and (pointer: fine) {
+            body, a, button, input, textarea { cursor: none !important; }
+            #cursor-dot, #cursor-ring {
+                pointer-events: none;
+                position: fixed;
+                transform: translate(-50%, -50%);
+                border-radius: 50%;
+                z-index: 10000;
+            }
+            #cursor-dot {
+                width: 6px; height: 6px;
+                background: var(--gold);
+                transition: transform 0.1s;
+            }
+            #cursor-ring {
+                width: 36px; height: 36px;
+                border: 1px solid rgba(212, 175, 55, 0.5);
+                transition: width 0.3s, height 0.3s, background 0.3s, border-color 0.3s, transform 0.15s ease-out;
+            }
+            body.cursor-hover #cursor-dot {
+                transform: translate(-50%, -50%) scale(0);
+            }
+            body.cursor-hover #cursor-ring {
+                width: 50px; height: 50px;
+                background: rgba(212, 175, 55, 0.1);
+                border-color: var(--gold);
+                backdrop-filter: blur(2px);
+            }
+        }
     </style>
 </head>
 
@@ -103,7 +153,7 @@
             <div class="flex items-center gap-4 group cursor-pointer" onclick="handleLogoClick()">
                 <div class="w-12 h-12 border-2 border-[#D4AF37] flex items-center justify-center text-[#D4AF37] font-serif text-2xl font-black italic transition-all group-hover:bg-[#D4AF37] group-hover:text-black">E</div>
                 <div class="flex flex-col text-right">
-                    <span class="text-2xl font-serif font-black tracking-tighter leading-none">ELOMDA</span>
+                    <span class="text-2xl font-serif font-black tracking-tighter leading-none silver-gradient">ELOMDA</span>
                     <span class="text-[9px] font-bold tracking-[0.5em] text-[#D4AF37] uppercase">Premium Boutique</span>
                 </div>
             </div>
@@ -129,7 +179,7 @@
     </header>
 
     <!-- Notif Sidebar -->
-    <div id="notif-sidebar" class="fixed top-0 right-0 h-full w-full max-w-sm bg-[#0A0A0A] border-l border-white/10 z-[200] p-8 shadow-2xl">
+    <div id="notif-sidebar" class="fixed top-0 right-0 h-full w-full max-w-sm bg-[#091024] border-l border-white/10 z-[200] p-8 shadow-2xl">
         <div class="flex justify-between items-center mb-12">
             <h3 class="text-2xl font-black italic">الإشعارات</h3>
             <button onclick="toggleNotif()" class="text-white/50 hover:text-white"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
@@ -141,13 +191,13 @@
 
     <!-- Hero -->
     <section class="relative min-h-screen flex items-center pt-20 overflow-hidden">
-        <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1490481651871-ab68624d5517?w=1920&q=100" class="w-full h-full object-cover opacity-30 grayscale scale-110">
+        <div class="absolute inset-0 z-0 bg-[#040814]">
+            <img src="https://images.unsplash.com/photo-1490481651871-ab68624d5517?w=1200&q=60&auto=format" class="w-full h-full object-cover opacity-30 grayscale scale-110" fetchpriority="high">
             <div class="absolute inset-0 hero-overlay"></div>
         </div>
         <div class="container mx-auto px-8 relative z-10 text-right">
             <h1 class="text-7xl md:text-9xl font-black mb-8 leading-[0.9] animate-[fadeIn_1s_ease-out]">أناقة <br> <span class="gold-gradient italic">بلا حدود</span></h1>
-            <p class="text-gray-400 text-lg max-w-2xl mb-12 font-light leading-relaxed mr-0 ml-auto opacity-70">مجموعتكم المفضلة للأزياء الراقية، الآن بتجربة رقمية فريدة.</p>
+            <p class="silver-gradient text-lg max-w-2xl mb-12 font-bold leading-relaxed mr-0 ml-auto opacity-90">مجموعتكم المفضلة للأزياء الراقية، الآن بتجربة رقمية فريدة.</p>
             <div class="mb-8 flex justify-end animate-[fadeIn_1.5s_ease-out]">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 border border-[#D4AF37] flex items-center justify-center text-[#D4AF37] font-serif text-xl italic font-black">E</div>
@@ -161,24 +211,23 @@
     </section>
 
     <!-- Products Grid -->
-    <section id="products" class="py-32 bg-[#080808]">
+    <section id="products" class="py-32 bg-[#060B19]">
         <div class="container mx-auto px-8">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-24 gap-8 border-r-4 border-[#D4AF37] pr-8">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-24 gap-8 border-r-4 border-[#C0C0C0] pr-8 reveal-up">
                 <div class="text-right">
                     <h2 class="text-5xl font-black mb-4">أحدث <span class="gold-gradient">التصاميم</span></h2>
-                    <p class="text-gray-500 text-xs font-bold uppercase tracking-[0.4em]">Elite Collection 2026</p>
+                    <p class="silver-gradient text-xs font-bold uppercase tracking-[0.4em]">Elite Collection 2026</p>
                 </div>
             </div>
 
-            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                <!-- Products will be rendered here via JavaScript -->
+            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 min-h-[400px]">
             </div>
         </div>
     </section>
 
     <!-- Contact Section -->
     <section id="contact" class="py-32 border-t border-white/5">
-        <div class="container mx-auto px-8">
+        <div class="container mx-auto px-8 reveal-up">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                 <div class="text-right">
                     <h2 class="text-6xl font-black mb-12">تواصل <span class="gold-gradient">معنا</span></h2>
@@ -194,7 +243,7 @@
                     </div>
                 </div>
                 <div class="bg-gradient-to-br from-[#D4AF37]/10 to-transparent p-1 rounded-[3rem]">
-                    <div class="bg-[#111] p-12 rounded-[2.9rem] text-center border border-white/5">
+                    <div class="bg-[#0D1530] p-12 rounded-[2.9rem] text-center border border-white/5">
                         <div class="w-20 h-20 border-2 border-[#D4AF37] mx-auto mb-8 flex items-center justify-center text-[#D4AF37] text-3xl font-serif italic">E</div>
                         <h3 class="text-3xl font-bold mb-4">عنوان الجاليري</h3>
                         <p class="text-gray-500 font-light leading-loose text-lg">العباسه الكبيره - ابوحماد - محافظة الشرقية</p>
@@ -210,7 +259,7 @@
     </section>
 
     <!-- Trust Sections -->
-    <section id="trust-pages" class="py-24 bg-[#050505] border-t border-white/5">
+    <section id="trust-pages" class="py-24 bg-[#040814] border-t border-white/5">
         <div class="container mx-auto px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-right">
                 <div class="space-y-4">
@@ -254,19 +303,32 @@
 
     <!-- Checkout Modal -->
     <div id="checkout-modal" class="fixed inset-0 z-[300] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="closeCheckout()"></div>
-        <div class="bg-[#111] border border-white/10 rounded-[3rem] w-full max-w-2xl relative overflow-hidden shadow-2xl animate-[fadeIn_0.4s_ease-out]">
+        <div class="absolute inset-0 bg-[#040814]/95 backdrop-blur-xl" onclick="closeCheckout()"></div>
+        <div class="bg-[#0D1530] border border-white/10 rounded-[3rem] w-full max-w-2xl relative overflow-y-auto no-scrollbar max-h-[90vh] shadow-2xl animate-[fadeIn_0.4s_ease-out]">
             <div id="step-1" class="block">
                 <div class="relative aspect-video">
                     <img id="modal-product-img" src="" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent p-12 flex flex-col justify-end text-right">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent p-12 flex flex-col justify-end text-right pointer-events-none">
                         <h3 id="modal-product-name" class="text-4xl font-black mb-2 italic"></h3>
                         <p id="modal-product-price" class="text-[#D4AF37] text-2xl font-black"></p>
                     </div>
-                    <button onclick="closeCheckout()" class="absolute top-8 right-8 w-12 h-12 bg-black/50 rounded-full flex items-center justify-center text-white border border-white/10 hover:bg-white hover:text-black transition-all"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                    <button onclick="closeCheckout()" class="absolute top-8 right-8 w-12 h-12 bg-black/50 rounded-full flex items-center justify-center text-white border border-white/10 hover:bg-white hover:text-black transition-all z-10"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                </div>
+                <div id="modal-thumbnails" class="flex gap-2 p-4 overflow-x-auto no-scrollbar bg-[#0D1530] border-b border-white/5">
                 </div>
                 
                 <div class="p-8 space-y-8 text-right">
+                    <!-- Psychology Triggers -->
+                    <div class="bg-[#D4AF37]/5 border border-[#D4AF37]/20 p-4 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-red-400 text-xs font-bold animate-pulse flex-row-reverse">
+                            <span>🔥 يرجى الإسراع! باقي 5 قطع فقط في المخزن</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs flex-row-reverse">
+                            <div class="flex text-[#D4AF37] text-[10px]">⭐⭐⭐⭐⭐</div>
+                            <span class="text-white/80">4.9/5 (أكثر من 120 عميل اشتروا المنتج)</span>
+                        </div>
+                    </div>
+
                     <!-- Size Selection -->
                     <div>
                         <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-4">اختر المقاس (Size)</p>
@@ -288,11 +350,28 @@
                         </div>
                     </div>
 
-                    <button onclick="goToStep(2)" class="gold-btn text-black w-full py-6 font-black text-xs uppercase tracking-[0.5em] mt-8">تأكيد الاختيار والاستمرار</button>
+                    <!-- Quantity Selection -->
+                    <div>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-4">الكمية (Quantity)</p>
+                        <div class="flex items-center gap-4 flex-row-reverse">
+                            <button type="button" onclick="changeQuantity(1)" class="w-8 h-8 rounded-full border border-white/20 hover:border-[#D4AF37] flex items-center justify-center transition-all">+</button>
+                            <span id="quantity-display" class="font-bold text-lg">1</span>
+                            <button type="button" onclick="changeQuantity(-1)" class="w-8 h-8 rounded-full border border-white/20 hover:border-[#D4AF37] flex items-center justify-center transition-all">-</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-[#D4AF37]/10 rounded-xl border border-[#D4AF37]/30 flex justify-between items-center flex-row-reverse">
+                        <span class="text-[10px] uppercase tracking-widest text-[#D4AF37] font-bold">الإجمالي:</span>
+                        <span id="step1-total-price" class="text-xl font-black text-[#D4AF37]"></span>
+                    </div>
+
+                    <div class="sticky bottom-0 bg-[#091024] pt-4 pb-2 border-t border-white/5 mt-4">
+                        <button onclick="goToStep(2)" class="gold-btn text-black w-full py-4 font-black text-sm uppercase tracking-[0.1em]">تأكيد الطلب</button>
+                    </div>
                 </div>
             </div>
             <div id="step-2" class="hidden">
-                <div class="p-8 border-b border-white/5 flex justify-between items-center bg-black">
+                <div class="p-8 border-b border-white/5 flex justify-between items-center bg-[#040814]">
                     <button onclick="goToStep(1)" class="text-white/50 hover:text-[#D4AF37]"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
                     <h3 class="text-xl font-bold tracking-widest uppercase">بيانات الشحن</h3>
                     <div class="w-6"></div>
@@ -313,9 +392,9 @@
 
     <!-- Add Product Modal -->
     <div id="add-product-modal" class="fixed inset-0 z-[400] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="closeAddProduct()"></div>
-        <div class="bg-[#111] border border-white/10 rounded-[3rem] w-full max-w-lg relative overflow-hidden shadow-2xl">
-            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-black">
+        <div class="absolute inset-0 bg-[#040814]/95 backdrop-blur-xl" onclick="closeAddProduct()"></div>
+        <div class="bg-[#0D1530] border border-white/10 rounded-[3rem] w-full max-w-lg relative overflow-hidden shadow-2xl">
+            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-[#040814]">
                 <button onclick="closeAddProduct()" class="text-white/50 hover:text-red-500 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
                 <h3 class="text-xl font-bold tracking-widest uppercase gold-gradient">Add New Product</h3>
                 <div class="w-6"></div>
@@ -325,20 +404,19 @@
                 <input type="number" id="new-prod-price" required class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm focus:border-[#D4AF37] outline-none" placeholder="السعر (ج.م)">
                 
                 <div class="space-y-4">
-                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">صورة المنتج:</p>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">صور المنتج:</p>
                     <div class="flex gap-4">
                         <button type="button" onclick="document.getElementById('new-prod-file').click()" class="flex-1 bg-white/5 border border-white/10 py-4 rounded-2xl text-xs hover:border-[#D4AF37] transition-all flex items-center justify-center gap-2">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
                             رفع من الاستوديو
                         </button>
-                        <input type="file" id="new-prod-file" accept="image/*" class="hidden" onchange="previewFile(this)">
+                        <input type="file" id="new-prod-file" accept="image/*" multiple class="hidden" onchange="previewFile(this)">
                     </div>
-                    <input type="url" id="new-prod-img" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm focus:border-[#D4AF37] outline-none" placeholder="أو ضع رابط الصورة هنا">
+                    <input type="url" id="new-prod-img" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm focus:border-[#D4AF37] outline-none" placeholder="أو ضع رابط صورة هنا">
                     
-                    <div id="image-preview" class="hidden relative aspect-video rounded-2xl overflow-hidden border border-[#D4AF37]/30">
-                        <img src="" class="w-full h-full object-cover">
-                        <button type="button" onclick="removePreview()" class="absolute top-2 right-2 bg-black/50 w-8 h-8 rounded-full text-white hover:bg-red-500 transition-all flex items-center justify-center">×</button>
+                    <div id="image-preview" class="hidden grid grid-cols-3 gap-2 mt-2 relative">
                     </div>
+                    <button type="button" onclick="removePreview()" id="remove-preview-btn" class="hidden text-red-500 text-xs mt-2 w-full text-center hover:underline">مسح الصور المرفوعة</button>
                 </div>
 
                 <button type="submit" class="gold-btn text-black w-full py-6 font-black text-xs uppercase tracking-[0.5em]">إضافة المنتج للمتجر</button>
@@ -351,8 +429,55 @@
         +
     </button>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <!-- Script -->
     <script>
+        // Custom Luxury Cursor
+        if (window.matchMedia("(pointer: fine)").matches) {
+            const dot = document.createElement('div');
+            dot.id = 'cursor-dot';
+            const ring = document.createElement('div');
+            ring.id = 'cursor-ring';
+            document.body.appendChild(dot);
+            document.body.appendChild(ring);
+            
+            document.addEventListener('mousemove', (e) => {
+                dot.style.left = e.clientX + 'px';
+                dot.style.top = e.clientY + 'px';
+                ring.style.left = e.clientX + 'px';
+                ring.style.top = e.clientY + 'px';
+            });
+
+            document.addEventListener('mouseover', (e) => {
+                if (e.target.tagName.toLowerCase() === 'button' || e.target.tagName.toLowerCase() === 'a' || e.target.closest('button') || e.target.closest('a') || e.target.onclick) {
+                    document.body.classList.add('cursor-hover');
+                } else {
+                    document.body.classList.remove('cursor-hover');
+                }
+            });
+        }
+
+        // Reveal Animations
+        function initReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal-up, .product-card').forEach(el => {
+                if (!el.classList.contains('reveal-up')) {
+                    el.classList.add('reveal-up');
+                }
+                observer.observe(el);
+            });
+        }
+
         // Admin check logic
         let logoClicks = 0;
         function handleLogoClick() {
@@ -386,10 +511,40 @@
 
         let currentProduct = null;
         let selectedOptions = { size: '', color: '' };
+        let quantity = 1;
         let cart = [];
         const myWhatsApp = "201203080495";
 
+        // UI Sounds
+        const uiSounds = {
+            click: new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'),
+            action: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
+            success: new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3')
+        };
+        uiSounds.click.volume = 0.15;
+        uiSounds.action.volume = 0.2;
+        uiSounds.success.volume = 0.4;
+
+        function playSound(type) {
+            try {
+                uiSounds[type].currentTime = 0;
+                uiSounds[type].play().catch(e => {});
+            } catch(e) {}
+        }
+
+        function changeQuantity(change) {
+            playSound('click');
+            quantity += change;
+            if (quantity < 1) quantity = 1;
+            document.getElementById('quantity-display').innerText = quantity;
+            if (currentProduct) {
+                const total = currentProduct.price * quantity;
+                document.getElementById('step1-total-price').innerText = total.toLocaleString() + " ج.م";
+            }
+        }
+
         function selectOption(type, value) {
+            playSound('click');
             selectedOptions[type] = value;
             
             // Highlight selected buttons
@@ -424,24 +579,26 @@
 
         // Product Management
         const defaultProducts = [
-            { id: 1, name: 'بليزر مخملي ملكي - إصدار خاص', price: 2850, images: ['https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=1200&q=100'] },
-            { id: 2, name: 'قميص حرير إيطالي - أسود فاحم', price: 1250, images: ['https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=1200&q=100'] },
-            { id: 3, name: 'حذاء جلود طبيعية - يدوي الصنع', price: 3450, images: ['https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1200&q=100'] },
-            { id: 4, name: 'جينز سليم - بريميوم دنيم', price: 1650, images: ['https://images.unsplash.com/photo-1542272604-787c3835535d?w=1200&q=100'] }
+            { id: 1, name: 'بليزر مخملي ملكي - إصدار خاص', price: 2850, images: ['https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=60&auto=format'] },
+            { id: 2, name: 'قميص حرير إيطالي - أسود فاحم', price: 1250, images: ['https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&q=60&auto=format'] },
+            { id: 3, name: 'حذاء جلود طبيعية - يدوي الصنع', price: 3450, images: ['https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=60&auto=format'] },
+            { id: 4, name: 'جينز سليم - بريميوم دنيم', price: 1650, images: ['https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=60&auto=format'] }
         ];
 
         let products = [];
 
         async function loadProducts() {
+            let savedProducts = JSON.parse(localStorage.getItem('alomda_products') || '[]');
+            products = savedProducts.length > 0 ? savedProducts : defaultProducts;
+            renderProducts();
+
             if (useFirebase) {
                 const snapshot = await db.collection('products').get();
                 products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 if (products.length === 0) products = defaultProducts;
-            } else {
-                let savedProducts = JSON.parse(localStorage.getItem('alomda_products') || '[]');
-                products = savedProducts.length > 0 ? savedProducts : defaultProducts;
+                localStorage.setItem('alomda_products', JSON.stringify(products));
+                renderProducts();
             }
-            renderProducts();
         }
 
         function renderProducts() {
@@ -452,17 +609,20 @@
                 <div class="product-card p-4 rounded-[2.5rem] group relative">
                     ${isAdmin ? `<button onclick="deleteProduct('${product.id}')" class="absolute top-6 left-6 z-10 bg-red-500/80 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600">×</button>` : ''}
                     <div class="relative aspect-[3/4] overflow-hidden rounded-[2rem] mb-6">
-                        <img src="${product.images[0]}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
+                        <img src="${product.images[0]}" loading="lazy" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center p-8">
-                            <button onclick="addToCart('${product.name}', ${product.price}, ['${product.images[0]}'])" class="gold-btn text-black w-full py-5 font-black text-[10px] uppercase tracking-widest">عرض التفاصيل</button>
+                            <button onclick="addToCart('${product.name}', ${product.price}, '${encodeURIComponent(JSON.stringify(product.images))}')" class="gold-btn text-black w-full py-5 font-black text-[10px] uppercase tracking-widest">عرض التفاصيل</button>
                         </div>
                     </div>
                     <div class="px-4 text-right">
-                        <h3 class="text-xl font-bold mb-2">${product.name}</h3>
-                        <span class="text-xl font-black gold-gradient">${product.price.toLocaleString()} ج.م</span>
+                        <h3 class="text-xl font-bold mb-2 text-white">${product.name}</h3>
+                        <span class="text-xl font-black silver-gradient">${product.price.toLocaleString()} ج.م</span>
                     </div>
                 </div>
             `).join('');
+            
+            // Re-initialize animations for new cards
+            setTimeout(initReveal, 50);
         }
 
         function openAddProduct() {
@@ -475,38 +635,58 @@
             document.body.style.overflow = 'auto';
         }
 
+        let uploadedImagesBase64 = [];
         function previewFile(input) {
-            const preview = document.getElementById('image-preview');
-            const img = preview.querySelector('img');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    img.src = e.target.result;
-                    preview.classList.remove('hidden');
-                    document.getElementById('new-prod-img').value = ''; // Clear URL if file is chosen
-                }
-                reader.readAsDataURL(input.files[0]);
+            const previewContainer = document.getElementById('image-preview');
+            const removeBtn = document.getElementById('remove-preview-btn');
+            previewContainer.innerHTML = ''; 
+            uploadedImagesBase64 = [];
+            
+            if (input.files && input.files.length > 0) {
+                previewContainer.classList.remove('hidden');
+                removeBtn.classList.remove('hidden');
+                document.getElementById('new-prod-img').value = ''; 
+                
+                Array.from(input.files).forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedImagesBase64.push(e.target.result);
+                        const div = document.createElement('div');
+                        div.className = "relative aspect-square rounded-xl overflow-hidden border border-[#D4AF37]/30";
+                        div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                        previewContainer.appendChild(div);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                previewContainer.classList.add('hidden');
+                removeBtn.classList.add('hidden');
             }
         }
 
         function removePreview() {
-            const preview = document.getElementById('image-preview');
-            preview.classList.add('hidden');
+            const previewContainer = document.getElementById('image-preview');
+            const removeBtn = document.getElementById('remove-preview-btn');
+            previewContainer.classList.add('hidden');
+            removeBtn.classList.add('hidden');
+            previewContainer.innerHTML = '';
             document.getElementById('new-prod-file').value = '';
+            uploadedImagesBase64 = [];
         }
 
         async function handleAddProduct(e) {
             e.preventDefault();
             const fileInput = document.getElementById('new-prod-file');
             const urlInput = document.getElementById('new-prod-img');
-            const previewImg = document.getElementById('image-preview').querySelector('img');
             
-            let imageUrl = urlInput.value;
-            if (fileInput.files && fileInput.files[0]) {
-                imageUrl = previewImg.src;
+            let imagesToSave = [];
+            if (uploadedImagesBase64.length > 0) {
+                imagesToSave = uploadedImagesBase64;
+            } else if (urlInput.value) {
+                imagesToSave = [urlInput.value];
             }
 
-            if (!imageUrl) {
+            if (imagesToSave.length === 0) {
                 alert('برجاء اختيار صورة أو وضع رابط للصورة');
                 return;
             }
@@ -515,7 +695,7 @@
                 id: Date.now(),
                 name: document.getElementById('new-prod-name').value,
                 price: parseInt(document.getElementById('new-prod-price').value),
-                images: [imageUrl]
+                images: imagesToSave
             };
             
             if (useFirebase) {
@@ -545,27 +725,53 @@
             }
         }
 
-        function addToCart(name, price, images) {
+        function addToCart(name, price, imagesStr) {
+            playSound('action');
+            let images = [];
+            try {
+                images = JSON.parse(decodeURIComponent(imagesStr));
+            } catch(e) {
+                images = [imagesStr];
+            }
             currentProduct = { name, price, images };
+            quantity = 1;
+            document.getElementById('quantity-display').innerText = quantity;
+            document.getElementById('step1-total-price').innerText = price.toLocaleString() + " ج.م";
             document.getElementById('modal-product-name').innerText = name;
-            document.getElementById('modal-product-price').innerText = price + " ج.م";
+            document.getElementById('modal-product-price').innerText = price.toLocaleString() + " ج.م";
             document.getElementById('modal-product-img').src = images[0];
+            
+            const thumbsContainer = document.getElementById('modal-thumbnails');
+            if (images.length > 1) {
+                thumbsContainer.classList.remove('hidden');
+                thumbsContainer.innerHTML = images.map(img => `
+                    <div onclick="document.getElementById('modal-product-img').src='${img}'" class="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden cursor-pointer hover:border-2 border-[#D4AF37] transition-all opacity-80 hover:opacity-100">
+                        <img src="${img}" class="w-full h-full object-cover">
+                    </div>
+                `).join('');
+            } else {
+                thumbsContainer.classList.add('hidden');
+            }
+            
             goToStep(1);
             document.getElementById('checkout-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
 
         function toggleNotif() {
+            playSound('click');
             document.getElementById('notif-sidebar').classList.toggle('show');
         }
 
         function goToStep(step) {
+            playSound('action');
             if (step === 2) {
                 if (!selectedOptions.size || !selectedOptions.color) {
                     alert('برجاء اختيار المقاس واللون أولاً');
                     return;
                 }
-                document.getElementById('summary-details').innerText = `${currentProduct.name} - مقاس ${selectedOptions.size} - لون ${selectedOptions.color}`;
+                const totalPrice = currentProduct.price * quantity;
+                document.getElementById('summary-details').innerHTML = `${currentProduct.name} <br> <span class="text-white/70">مقاس ${selectedOptions.size} - لون ${selectedOptions.color} - الكمية ${quantity}</span> <br> <span class="text-xl mt-2 block text-[#D4AF37]">الإجمالي: ${totalPrice.toLocaleString()} ج.م</span>`;
             }
             document.getElementById('step-1').style.display = (step === 1) ? 'block' : 'none';
             document.getElementById('step-2').style.display = (step === 2) ? 'block' : 'none';
@@ -586,6 +792,10 @@
                 customerName: document.getElementById('cust-name').value,
                 phone: document.getElementById('cust-phone').value,
                 address: document.getElementById('cust-address').value,
+                size: selectedOptions.size,
+                color: selectedOptions.color,
+                quantity: quantity,
+                totalPrice: currentProduct.price * quantity,
                 timestamp: Date.now()
             };
 
@@ -599,16 +809,20 @@
             }
 
             // WhatsApp
-            const msg = `*طلب جديد من المتجر* 🛍️\n\nالمنتج: ${data.productName}\nالمقاس: ${selectedOptions.size}\nاللون: ${selectedOptions.color}\nالاسم: ${data.customerName}\nالهاتف: ${data.phone}\nالعنوان: ${data.address}`;
+            const msg = `*طلب جديد من المتجر* 🛍️\n\nالمنتج: ${data.productName}\nالمقاس: ${data.size}\nاللون: ${data.color}\nالكمية: ${data.quantity}\nالإجمالي: ${data.totalPrice} ج.م\nالاسم: ${data.customerName}\nالهاتف: ${data.phone}\nالعنوان: ${data.address}`;
             window.open(`https://wa.me/${myWhatsApp}?text=${encodeURIComponent(msg)}`, '_blank');
 
             // UI Feedback
+            playSound('success');
             closeCheckout();
             cart.push(currentProduct);
             document.getElementById('cart-count').innerText = cart.length;
             document.getElementById('notif-dot').classList.remove('hidden');
             
             const list = document.getElementById('notif-list');
+            if (list.innerHTML.includes('لا توجد إشعارات جديدة')) {
+                list.innerHTML = '';
+            }
             list.innerHTML = `<div class="bg-white/5 p-6 rounded-3xl border border-[#D4AF37]/30 mb-4 animate-[fadeIn_0.5s_ease-out]">
                 <p class="text-xs font-bold text-[#D4AF37] mb-2 uppercase tracking-widest">Order Confirmed</p>
                 <p class="text-sm font-light text-gray-300">تم تسجيل طلبك لـ ${data.productName} بنجاح.</p>
@@ -623,12 +837,26 @@
         // Listen for new orders in notifications (Admin Only)
         if (isAdmin && useFirebase) {
             let isFirstLoad = true;
+            let unseenCount = 0;
+            const notifSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+            
+            window.addEventListener('click', () => {
+                if (unseenCount > 0) {
+                    unseenCount = 0;
+                    document.title = 'Elomda Fashion | Premium Boutique';
+                }
+            });
+
             db.collection('orders').orderBy('timestamp', 'asc').onSnapshot(snapshot => {
                 snapshot.docChanges().forEach(change => {
                     if (change.type === 'added') {
                         const newOrder = change.doc.data();
                         // Show notification only for newly added orders (not on initial load)
                         if (!isFirstLoad) {
+                            unseenCount++;
+                            document.title = `(${unseenCount}) طلب جديد! | Elomda`;
+                            notifSound.play().catch(e => console.log('Audio prevented'));
+                            
                             document.getElementById('notif-dot').classList.remove('hidden');
                             const list = document.getElementById('notif-list');
                             if (list.innerHTML.includes('لا توجد إشعارات جديدة')) {

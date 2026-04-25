@@ -8,36 +8,61 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase SDKs moved to bottom -->
 
     <style>
-        body { font-family: 'Cairo', sans-serif; background: #050505; color: white; }
+        body { font-family: 'Cairo', sans-serif; background: #040814; color: white; }
         .gold-gradient {
             background: linear-gradient(135deg, #D4AF37 0%, #F1D592 50%, #D4AF37 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .order-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.1); transition: all 0.3s; }
-        .order-card:hover { border-color: #D4AF37; background: rgba(212,175,55,0.02); }
+        .glass-panel {
+            background: rgba(13, 21, 48, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .order-card { 
+            background: linear-gradient(145deg, rgba(13,21,48,1) 0%, rgba(6,11,25,1) 100%); 
+            border: 1px solid rgba(212,175,55,0.1); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .order-card:hover { 
+            border-color: #D4AF37; 
+            box-shadow: 0 10px 30px -10px rgba(212,175,55,0.2);
+            transform: translateY(-2px);
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #D4AF37 0%, #B4941F 100%);
+            color: black;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #040814; }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 10px; }
     </style>
 </head>
 
 <body class="p-8">
     <div class="container mx-auto">
-        <header class="flex justify-between items-center mb-12 border-b border-white/10 pb-8">
-            <div>
-                <h1 class="text-4xl font-black mb-1">لوحة التحكم <span class="gold-gradient italic">Admin</span></h1>
-                <p class="text-gray-500 text-sm italic">مراقبة وإدارة Elomda Store</p>
+        <header class="glass-panel flex flex-col md:flex-row justify-between items-center mb-12 p-6 rounded-[2rem] sticky top-4 z-50">
+            <div class="text-center md:text-right mb-6 md:mb-0">
+                <h1 class="text-3xl md:text-4xl font-black mb-1">لوحة التحكم <span class="gold-gradient italic">Premium</span></h1>
+                <p class="text-gray-400 text-xs tracking-widest uppercase">Elomda Store Management</p>
             </div>
-            <div class="flex gap-4">
-                <nav class="flex gap-4 bg-white/5 p-1 rounded-xl">
-                    <button onclick="showTab('orders')" class="tab-btn px-6 py-2 rounded-lg text-xs font-bold transition-all bg-[#D4AF37] text-black">الطلبات</button>
-                    <button onclick="showTab('products')" class="tab-btn px-6 py-2 rounded-lg text-xs font-bold transition-all hover:bg-white/10">المنتجات</button>
-                    <button onclick="showTab('customers')" class="tab-btn px-6 py-2 rounded-lg text-xs font-bold transition-all hover:bg-white/10">العملاء</button>
+            <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                <nav class="flex gap-2 bg-[#040814]/50 p-2 rounded-2xl border border-white/5 overflow-x-auto w-full md:w-auto">
+                    <button onclick="showTab('orders')" class="tab-btn active px-6 py-3 rounded-xl text-xs font-bold transition-all flex-1 md:flex-none">الطلبات</button>
+                    <button onclick="showTab('products')" class="tab-btn px-6 py-3 rounded-xl text-xs font-bold transition-all hover:bg-white/5 text-gray-400 flex-1 md:flex-none">المنتجات</button>
+                    <button onclick="showTab('customers')" class="tab-btn px-6 py-3 rounded-xl text-xs font-bold transition-all hover:bg-white/5 text-gray-400 flex-1 md:flex-none">العملاء</button>
                 </nav>
-                <a href="index.html" class="bg-white text-black px-6 py-2 rounded-full font-bold text-xs flex items-center">العودة للمتجر</a>
+                <a href="index.html" class="bg-white/10 border border-white/20 hover:bg-white hover:text-black transition-all text-white px-6 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                    زيارة المتجر
+                </a>
             </div>
         </header>
 
@@ -45,17 +70,20 @@
         <div id="tab-orders" class="tab-content">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-1 space-y-6">
-                    <div class="order-card p-8 rounded-3xl">
-                        <span class="text-[10px] text-[#D4AF37] font-black uppercase tracking-widest block mb-2">Total Orders</span>
-                        <h2 id="total-count" class="text-6xl font-black">0</h2>
+                    <div class="glass-panel p-8 rounded-[2rem] relative overflow-hidden group">
+                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full blur-3xl group-hover:bg-[#D4AF37]/20 transition-all"></div>
+                        <span class="text-[10px] text-[#D4AF37] font-black uppercase tracking-widest block mb-4 flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> إجمالي الطلبات</span>
+                        <h2 id="total-count" class="text-7xl font-black text-white">0</h2>
                     </div>
-                    <div class="order-card p-8 rounded-3xl">
-                        <span class="text-[10px] text-green-500 font-black uppercase tracking-widest block mb-2">Estimated Revenue</span>
-                        <h2 id="total-revenue" class="text-4xl font-black italic">0 <span class="text-sm">ج.م</span></h2>
+                    <div class="glass-panel p-8 rounded-[2rem] relative overflow-hidden group">
+                        <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-green-500/10 rounded-full blur-3xl group-hover:bg-green-500/20 transition-all"></div>
+                        <span class="text-[10px] text-green-400 font-black uppercase tracking-widest block mb-4 flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> الأرباح التقديرية</span>
+                        <h2 id="total-revenue" class="text-4xl lg:text-5xl font-black italic gold-gradient">0 <span class="text-sm text-gray-500 not-italic">ج.م</span></h2>
                     </div>
                 </div>
                 <div class="lg:col-span-2">
-                    <div id="orders-list" class="space-y-4"></div>
+                    <div id="orders-list" class="space-y-4">
+                    </div>
                 </div>
             </div>
         </div>
@@ -66,7 +94,8 @@
                 <h3 class="text-2xl font-black italic">إدارة المنتجات</h3>
                 <button onclick="location.href='index.html?admin=true'" class="gold-btn text-black px-6 py-2 rounded-full text-xs font-bold">+ إضافة منتج جديد</button>
             </div>
-            <div id="admin-products-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="admin-products-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[300px]">
+            </div>
         </div>
 
         <!-- Customers Tab -->
@@ -74,7 +103,7 @@
             <h3 class="text-2xl font-black italic mb-8">قائمة العملاء</h3>
             <div class="bg-white/5 rounded-[2rem] overflow-hidden border border-white/10">
                 <table class="w-full text-right">
-                    <thead class="bg-black">
+                    <thead class="bg-[#040814]">
                         <tr>
                             <th class="p-6 text-xs uppercase tracking-widest text-[#D4AF37]">الاسم</th>
                             <th class="p-6 text-xs uppercase tracking-widest text-[#D4AF37]">الهاتف</th>
@@ -85,7 +114,45 @@
                 </table>
             </div>
         </div>
+    <!-- Edit Product Modal -->
+    <div id="edit-product-modal" class="fixed inset-0 z-[400] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="closeEditProduct()"></div>
+        <div class="bg-[#111] border border-white/10 rounded-[3rem] w-full max-w-lg relative overflow-y-auto max-h-[90vh] shadow-2xl">
+            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-[#040814]">
+                <button onclick="closeEditProduct()" class="text-white/50 hover:text-red-500 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                <h3 class="text-xl font-bold tracking-widest uppercase gold-gradient">تعديل المنتج</h3>
+                <div class="w-6"></div>
+            </div>
+            <form id="edit-product-form" onsubmit="handleEditProduct(event)" class="p-12 space-y-6 text-right">
+                <input type="hidden" id="edit-prod-id">
+                <input type="text" id="edit-prod-name" required class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm focus:border-[#D4AF37] outline-none" placeholder="اسم المنتج">
+                <input type="number" id="edit-prod-price" required class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm focus:border-[#D4AF37] outline-none" placeholder="السعر (ج.م)">
+                
+                <div class="space-y-4">
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">صور المنتج (سيتم استبدال الصور الحالية إذا قمت بالرفع):</p>
+                    <div class="flex gap-4">
+                        <button type="button" onclick="document.getElementById('edit-prod-file').click()" class="flex-1 bg-white/5 border border-white/10 py-4 rounded-2xl text-xs hover:border-[#D4AF37] transition-all flex items-center justify-center gap-2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                            رفع صور جديدة
+                        </button>
+                        <input type="file" id="edit-prod-file" accept="image/*" multiple class="hidden" onchange="previewEditFile(this)">
+                    </div>
+                    <input type="url" id="edit-prod-img" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-sm focus:border-[#D4AF37] outline-none" placeholder="أو ضع رابط صورة جديدة هنا">
+                    
+                    <div id="edit-image-preview" class="hidden grid grid-cols-3 gap-2 mt-2 relative">
+                    </div>
+                    <button type="button" onclick="removeEditPreview()" id="remove-edit-preview-btn" class="hidden text-red-500 text-xs mt-2 w-full text-center hover:underline">مسح الصور المرفوعة</button>
+                </div>
+
+                <button type="submit" class="gold-btn text-black w-full py-6 font-black text-xs uppercase tracking-[0.5em]">حفظ التعديلات</button>
+            </form>
+        </div>
     </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
         // Firebase Configuration
@@ -113,11 +180,13 @@
             document.getElementById('tab-' + tab).classList.remove('hidden');
             
             document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('bg-[#D4AF37]', 'text-black');
+                b.classList.remove('active', 'text-gray-400');
                 if (b.innerText.includes('الطلبات') && tab === 'orders' || 
                     b.innerText.includes('المنتجات') && tab === 'products' || 
                     b.innerText.includes('العملاء') && tab === 'customers') {
-                    b.classList.add('bg-[#D4AF37]', 'text-black');
+                    b.classList.add('active');
+                } else {
+                    b.classList.add('text-gray-400');
                 }
             });
             
@@ -131,8 +200,12 @@
             
             let revenue = 0;
             orders.forEach(o => {
-                const p = products.find(prod => prod.name === o.productName);
-                if (p) revenue += p.price;
+                if (o.totalPrice) {
+                    revenue += o.totalPrice;
+                } else {
+                    const p = products.find(prod => prod.name === o.productName);
+                    if (p) revenue += p.price;
+                }
             });
             document.getElementById('total-revenue').innerText = revenue.toLocaleString();
 
@@ -146,8 +219,9 @@
                     <div class="flex gap-4 items-center">
                         <div class="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center text-[#D4AF37] font-black">${orders.length - index}</div>
                         <div>
-                            <h4 class="font-black text-lg">${order.productName}</h4>
-                            <p class="text-xs text-[#D4AF37] font-bold">${order.customerName} - ${order.phone}</p>
+                            <h4 class="font-black text-lg">${order.productName} <span class="text-sm font-normal text-gray-400">(عدد ${order.quantity || 1})</span></h4>
+                            <p class="text-xs text-[#D4AF37] font-bold">${order.customerName} - ${order.phone} | <span class="text-white">${order.totalPrice ? order.totalPrice.toLocaleString() : 'N/A'} ج.م</span></p>
+                            ${order.size && order.color ? `<p class="text-[10px] text-gray-400 mt-1">المقاس: ${order.size} - اللون: ${order.color}</p>` : ''}
                         </div>
                     </div>
                     <div class="text-right">
@@ -158,24 +232,63 @@
             `).join('');
         }
 
+        let unseenOrdersCount = 0;
+        const notifSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+
+        // Reset title when admin clicks anywhere
+        window.addEventListener('click', () => {
+            if (unseenOrdersCount > 0) {
+                unseenOrdersCount = 0;
+                document.title = 'لوحة التحكم | Elomda Admin';
+            }
+        });
+
+        const defaultProducts = [
+            { id: 1, name: 'بليزر مخملي ملكي - إصدار خاص', price: 2850, images: ['https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=60&auto=format'] },
+            { id: 2, name: 'قميص حرير إيطالي - أسود فاحم', price: 1250, images: ['https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&q=60&auto=format'] },
+            { id: 3, name: 'حذاء جلود طبيعية - يدوي الصنع', price: 3450, images: ['https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=60&auto=format'] },
+            { id: 4, name: 'جينز سليم - بريميوم دنيم', price: 1650, images: ['https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=60&auto=format'] }
+        ];
+
         async function loadAdminData() {
+            adminProducts = JSON.parse(localStorage.getItem('alomda_products') || '[]');
+            if (adminProducts.length === 0) adminProducts = defaultProducts;
+            adminOrders = JSON.parse(localStorage.getItem('alomda_orders') || '[]').reverse();
+            
+            renderOrdersData(adminOrders, adminProducts);
+            if (!document.getElementById('tab-products').classList.contains('hidden')) renderAdminProducts();
+            if (!document.getElementById('tab-customers').classList.contains('hidden')) renderCustomersData(adminOrders);
+
             if (useFirebase) {
-                // Fetch products once
-                const prodsSnap = await db.collection('products').get();
-                adminProducts = prodsSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                db.collection('products').get().then(prodsSnap => {
+                    adminProducts = prodsSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                    if (adminProducts.length === 0) adminProducts = defaultProducts;
+                    localStorage.setItem('alomda_products', JSON.stringify(adminProducts));
+                    if (!document.getElementById('tab-products').classList.contains('hidden')) {
+                        renderAdminProducts();
+                    }
+                });
                 
-                // Real-time listener for orders
+                let isFirstLoad = true;
                 db.collection('orders').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
                     adminOrders = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                    localStorage.setItem('alomda_orders', JSON.stringify(adminOrders));
                     renderOrdersData(adminOrders, adminProducts);
                     if (!document.getElementById('tab-customers').classList.contains('hidden')) {
                         renderCustomersData(adminOrders);
                     }
+                    
+                    if (!isFirstLoad) {
+                        snapshot.docChanges().forEach(change => {
+                            if (change.type === 'added') {
+                                unseenOrdersCount++;
+                                document.title = `(${unseenOrdersCount}) طلب جديد! | Elomda Admin`;
+                                notifSound.play().catch(e => console.log('Audio prevented'));
+                            }
+                        });
+                    }
+                    isFirstLoad = false;
                 });
-            } else {
-                adminProducts = JSON.parse(localStorage.getItem('alomda_products') || '[]');
-                adminOrders = JSON.parse(localStorage.getItem('alomda_orders') || '[]').reverse();
-                renderOrdersData(adminOrders, adminProducts);
             }
         }
 
@@ -184,13 +297,16 @@
             list.innerHTML = adminProducts.map(p => `
                 <div class="order-card p-6 rounded-2xl">
                     <div class="flex gap-4 mb-4">
-                        <img src="${p.images[0]}" class="w-20 h-20 object-cover rounded-xl">
+                        <img src="${p.images && p.images.length > 0 ? p.images[0] : ''}" class="w-20 h-20 object-cover rounded-xl">
                         <div>
                             <h4 class="font-bold">${p.name}</h4>
-                            <input type="number" onchange="updatePrice('${p.id}', this.value)" value="${p.price}" class="bg-black border border-white/10 rounded px-2 py-1 text-sm text-[#D4AF37] w-24"> ج.م
+                            <input type="number" onchange="updatePrice('${p.id}', this.value)" value="${p.price}" class="bg-[#040814] border border-white/10 rounded px-2 py-1 text-sm text-[#D4AF37] w-24"> ج.م
                         </div>
                     </div>
-                    <button onclick="deleteProduct('${p.id}')" class="text-red-500 text-[10px] uppercase font-bold hover:underline">حذف المنتج</button>
+                    <div class="flex justify-between items-center border-t border-white/5 pt-4 mt-2">
+                        <button onclick="editProduct('${p.id}')" class="text-blue-400 text-[10px] uppercase font-bold hover:underline">تعديل</button>
+                        <button onclick="deleteProduct('${p.id}')" class="text-red-500 text-[10px] uppercase font-bold hover:underline">حذف المنتج</button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -217,6 +333,97 @@
                 }
                 renderAdminProducts();
             }
+        }
+
+        let editUploadedImagesBase64 = [];
+        let currentEditImages = [];
+
+        function previewEditFile(input) {
+            const previewContainer = document.getElementById('edit-image-preview');
+            const removeBtn = document.getElementById('remove-edit-preview-btn');
+            previewContainer.innerHTML = ''; 
+            editUploadedImagesBase64 = [];
+            
+            if (input.files && input.files.length > 0) {
+                previewContainer.classList.remove('hidden');
+                removeBtn.classList.remove('hidden');
+                document.getElementById('edit-prod-img').value = ''; 
+                
+                Array.from(input.files).forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        editUploadedImagesBase64.push(e.target.result);
+                        const div = document.createElement('div');
+                        div.className = "relative aspect-square rounded-xl overflow-hidden border border-[#D4AF37]/30";
+                        div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                        previewContainer.appendChild(div);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                previewContainer.classList.add('hidden');
+                removeBtn.classList.add('hidden');
+            }
+        }
+
+        function removeEditPreview() {
+            const previewContainer = document.getElementById('edit-image-preview');
+            const removeBtn = document.getElementById('remove-edit-preview-btn');
+            previewContainer.classList.add('hidden');
+            removeBtn.classList.add('hidden');
+            previewContainer.innerHTML = '';
+            document.getElementById('edit-prod-file').value = '';
+            editUploadedImagesBase64 = [];
+        }
+
+        function editProduct(id) {
+            const product = adminProducts.find(p => p.id == id);
+            if (!product) return;
+            
+            document.getElementById('edit-prod-id').value = product.id;
+            document.getElementById('edit-prod-name').value = product.name;
+            document.getElementById('edit-prod-price').value = product.price;
+            currentEditImages = product.images || [];
+            removeEditPreview();
+            
+            document.getElementById('edit-product-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditProduct() {
+            document.getElementById('edit-product-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function handleEditProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-prod-id').value;
+            const urlInput = document.getElementById('edit-prod-img');
+            
+            let imagesToSave = currentEditImages;
+            if (editUploadedImagesBase64.length > 0) {
+                imagesToSave = editUploadedImagesBase64;
+            } else if (urlInput.value) {
+                imagesToSave = [urlInput.value];
+            }
+
+            const updatedData = {
+                name: document.getElementById('edit-prod-name').value,
+                price: parseInt(document.getElementById('edit-prod-price').value),
+                images: imagesToSave
+            };
+
+            if (useFirebase) {
+                await db.collection('products').doc(id.toString()).update(updatedData);
+                adminProducts = adminProducts.map(p => p.id == id ? {...p, ...updatedData} : p);
+            } else {
+                adminProducts = adminProducts.map(p => p.id == id ? {...p, ...updatedData} : p);
+                localStorage.setItem('alomda_products', JSON.stringify(adminProducts));
+            }
+            
+            renderAdminProducts();
+            closeEditProduct();
+            alert('تم تعديل المنتج بنجاح');
         }
 
         function renderCustomers() {
