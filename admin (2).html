@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم | Elomda Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#C9A84C;--gold-light:#F0D080;--dark:#0D0D0D;--dark2:#1A1A1A;--dark3:#242424;
+  --text:#F5F0E8;--text-muted:#9A9080;--border:#2E2E2E;--danger:#E24B4A;--success:#639922
+}
+body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;direction:rtl}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--dark);display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-card{background:var(--dark2);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:400px;max-width:95vw;text-align:center}
+.login-logo{width:64px;height:64px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#000;margin:0 auto 24px}
+.login-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.login-sub{color:var(--text-muted);font-size:14px;margin-bottom:32px}
+.login-field{margin-bottom:14px;text-align:right}
+.login-field label{display:block;font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:6px}
+.login-input{width:100%;padding:12px 16px;background:var(--dark3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:'Cairo',sans-serif;outline:none}
+.login-input:focus{border-color:var(--gold)}
+.login-btn{width:100%;padding:13px;background:var(--gold);border:none;border-radius:10px;color:#000;font-size:16px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer;margin-top:8px}
+.login-btn:hover{background:var(--gold-light)}
+.login-btn:disabled{opacity:.5;cursor:not-allowed}
+.login-err{color:var(--danger);font-size:13px;margin-top:12px;min-height:18px}
+.login-loading{color:var(--text-muted);font-size:13px;margin-top:12px}
+
+/* SIDEBAR */
+.sidebar{position:fixed;right:0;top:0;bottom:0;width:240px;background:var(--dark2);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+.sidebar-logo{padding:24px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#000;flex-shrink:0}
+.logo-text{font-size:16px;font-weight:700}
+.logo-sub{font-size:11px;color:var(--text-muted)}
+nav{flex:1;padding:16px 12px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:500;color:var(--text-muted);margin-bottom:4px;transition:.15s;user-select:none}
+.nav-item:hover{background:var(--dark3);color:var(--text)}
+.nav-item.active{background:rgba(201,168,76,.12);color:var(--gold)}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+.sidebar-footer{padding:16px 12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;cursor:pointer;border-radius:10px}
+.sidebar-footer:hover{background:rgba(226,75,74,.1)}
+.avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#000;flex-shrink:0}
+.admin-email{font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+
+/* MAIN */
+.main{margin-right:240px;padding:28px;min-height:100vh}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.page-title{font-size:20px;font-weight:700}
+.page-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
+.header-btn{padding:10px 20px;background:var(--gold);border:none;border-radius:10px;color:#000;font-size:14px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer;text-decoration:none;display:inline-block}
+.header-btn:hover{background:var(--gold-light)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:20px}
+.stat-label{font-size:12px;color:var(--text-muted);margin-bottom:8px}
+.stat-val{font-size:26px;font-weight:700;margin-bottom:4px}
+.stat-icon{font-size:22px;margin-bottom:12px}
+.stat-change{font-size:12px;color:var(--text-muted)}
+
+/* CARDS & TABLES */
+.card{background:var(--dark2);border:1px solid var(--border);border-radius:14px;margin-bottom:24px;overflow:hidden}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}
+.card-title{font-size:15px;font-weight:700}
+.badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(201,168,76,.15);color:var(--gold)}
+table{width:100%;border-collapse:collapse}
+th{text-align:right;padding:12px 20px;font-size:12px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:14px 20px;font-size:14px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.status{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.status.pending{background:rgba(239,159,39,.15);color:#EF9F27}
+.status.done{background:rgba(99,153,34,.15);color:#83C832}
+.status.cancelled{background:rgba(226,75,74,.15);color:var(--danger)}
+.action-btn{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;font-family:'Cairo',sans-serif;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text-muted);white-space:nowrap}
+.action-btn:hover{border-color:var(--gold);color:var(--gold)}
+.action-btn.del:hover{border-color:var(--danger);color:var(--danger)}
+
+/* PRODUCTS */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;padding:20px}
+.product-card{background:var(--dark3);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.product-img{height:120px;background:#1e1e1e;display:flex;align-items:center;justify-content:center;font-size:36px}
+.product-img img{width:100%;height:100%;object-fit:cover}
+.product-info{padding:14px}
+.product-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.product-price{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:4px}
+.product-cat{font-size:11px;color:var(--text-muted);margin-bottom:10px}
+.product-actions{display:flex;gap:6px}
+.product-actions .action-btn{flex:1;text-align:center}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+label{font-size:13px;color:var(--text-muted);font-weight:600}
+input[type=text],input[type=number],input[type=email],input[type=password],select,textarea{
+  padding:11px 14px;background:var(--dark3);border:1px solid var(--border);border-radius:10px;
+  color:var(--text);font-size:14px;font-family:'Cairo',sans-serif;outline:none;width:100%
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+textarea{resize:vertical;min-height:80px}
+select option{background:var(--dark2)}
+.submit-btn{grid-column:1/-1;padding:13px;background:var(--gold);border:none;border-radius:10px;color:#000;font-size:15px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer}
+.submit-btn:hover{background:var(--gold-light)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* FILE UPLOAD */
+.upload-area{grid-column:1/-1;border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:.2s}
+.upload-area:hover{border-color:var(--gold)}
+.upload-area input{display:none}
+.upload-preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.upload-preview img{width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}
+
+.page{display:none}
+.page.active{display:block}
+.empty-state{text-align:center;padding:48px;color:var(--text-muted);font-size:14px}
+.loading-state{text-align:center;padding:48px;color:var(--text-muted);font-size:14px}
+
+/* REALTIME INDICATOR */
+.realtime-dot{width:8px;height:8px;background:var(--success);border-radius:50%;display:inline-block;margin-left:6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.actions-cell{display:flex;gap:6px;align-items:center}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:12px 24px;font-size:14px;z-index:99999;opacity:0;transition:.3s;pointer-events:none}
+#toast.show{opacity:1}
+#toast.success{border-color:var(--success);color:#83C832}
+#toast.error{border-color:var(--danger);color:var(--danger)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">E</div>
+    <div class="login-title">لوحة تحكم Elomda</div>
+    <div class="login-sub">سجّل دخولك بحساب المدير</div>
+    <div class="login-field">
+      <label>البريد الإلكتروني</label>
+      <input type="email" class="login-input" id="login-email" placeholder="admin@elomda.com" />
+    </div>
+    <div class="login-field">
+      <label>كلمة المرور</label>
+      <input type="password" class="login-input" id="login-pass" placeholder="••••••••" />
+    </div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">دخول</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">E</div>
+    <div>
+      <div class="logo-text">Elomda Admin</div>
+      <div class="logo-sub"><span class="realtime-dot"></span>مباشر</div>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-item active" data-page="dashboard">
+      <span class="nav-icon">📊</span> الإحصائيات
+    </div>
+    <div class="nav-item" data-page="orders">
+      <span class="nav-icon">📦</span> الطلبات
+      <span class="badge" id="nav-orders-count" style="margin-right:auto;display:none"></span>
+    </div>
+    <div class="nav-item" data-page="products">
+      <span class="nav-icon">👗</span> المنتجات
+    </div>
+    <div class="nav-item" data-page="add-product">
+      <span class="nav-icon">➕</span> إضافة منتج
+    </div>
+    <div class="nav-item" data-page="customers">
+      <span class="nav-icon">👥</span> العملاء
+    </div>
+  </nav>
+  <div class="sidebar-footer" onclick="doLogout()">
+    <div class="avatar">م</div>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--danger)">تسجيل الخروج</div>
+      <div class="admin-email" id="admin-email-display">-</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div>
+        <div class="page-title">لوحة الإحصائيات</div>
+        <div class="page-sub">البيانات محدّثة لحظياً من Firebase</div>
+      </div>
+      <a href="index.html" class="header-btn">🏪 زيارة المتجر</a>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-label">إجمالي الطلبات</div>
+        <div class="stat-val" id="stat-orders">—</div>
+        <div class="stat-change">طلب مسجل</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-label">إجمالي الأرباح</div>
+        <div class="stat-val" id="stat-revenue">—</div>
+        <div class="stat-change">ج.م إجمالي المبيعات</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-label">العملاء</div>
+        <div class="stat-val" id="stat-customers">—</div>
+        <div class="stat-change">عميل فريد</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👗</div>
+        <div class="stat-label">المنتجات</div>
+        <div class="stat-val" id="stat-products">—</div>
+        <div class="stat-change">منتج في المتجر</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">آخر الطلبات</div>
+        <span class="badge" id="dash-orders-badge">0 طلب</span>
+      </div>
+      <div id="dash-orders-table"><div class="loading-state">جاري التحميل...</div></div>
+    </div>
+  </div>
+
+  <!-- ORDERS -->
+  <div class="page" id="page-orders">
+    <div class="page-header">
+      <div>
+        <div class="page-title">إدارة الطلبات</div>
+        <div class="page-sub">كل الطلبات الواردة — مباشر من Firebase</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">قائمة الطلبات</div>
+        <span class="badge" id="orders-badge">0 طلب</span>
+      </div>
+      <div id="orders-table-cont"><div class="loading-state">جاري التحميل...</div></div>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="page" id="page-products">
+    <div class="page-header">
+      <div>
+        <div class="page-title">المنتجات</div>
+        <div class="page-sub">إدارة منتجات المتجر</div>
+      </div>
+      <button class="header-btn" onclick="gotoPage('add-product')">➕ منتج جديد</button>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">كل المنتجات</div></div>
+      <div id="products-cont" class="products-grid"><div class="loading-state" style="grid-column:1/-1">جاري التحميل...</div></div>
+    </div>
+  </div>
+
+  <!-- ADD PRODUCT -->
+  <div class="page" id="page-add-product">
+    <div class="page-header">
+      <div>
+        <div class="page-title">إضافة منتج جديد</div>
+        <div class="page-sub">المنتج هيظهر في المتجر فوراً</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">بيانات المنتج</div></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>اسم المنتج *</label>
+          <input type="text" id="p-name" placeholder="فستان صيفي أنيق" />
+        </div>
+        <div class="form-group">
+          <label>السعر (جنيه) *</label>
+          <input type="number" id="p-price" placeholder="0" min="0" />
+        </div>
+        <div class="form-group">
+          <label>القسم</label>
+          <select id="p-cat">
+            <option>ملابس نسائية</option>
+            <option>ملابس رجالية</option>
+            <option>أطفال</option>
+            <option>إكسسوارات</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>الكمية المتاحة</label>
+          <input type="number" id="p-stock" placeholder="0" min="0" />
+        </div>
+        <div class="form-group">
+          <label>الألوان (مفصولة بفاصلة)</label>
+          <input type="text" id="p-colors" placeholder="أبيض، أسود، بيج" />
+        </div>
+        <div class="form-group">
+          <label>المقاسات (مفصولة بفاصلة)</label>
+          <input type="text" id="p-sizes" placeholder="S, M, L, XL" />
+        </div>
+        <div class="form-group full">
+          <label>وصف المنتج</label>
+          <textarea id="p-desc" placeholder="اكتب وصفاً مفصلاً..."></textarea>
+        </div>
+        <div class="form-group full upload-area" onclick="document.getElementById('p-img-input').click()">
+          <input type="file" id="p-img-input" accept="image/*" multiple onchange="previewImages(this)" />
+          <div style="color:var(--text-muted);font-size:14px">📷 انقر لرفع صور المنتج</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px">الصور هتتحفظ على Firebase Storage</div>
+          <div class="upload-preview" id="img-preview"></div>
+        </div>
+        <button class="submit-btn" id="add-product-btn" onclick="addProduct()">✅ إضافة المنتج للمتجر</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOMERS -->
+  <div class="page" id="page-customers">
+    <div class="page-header">
+      <div>
+        <div class="page-title">العملاء</div>
+        <div class="page-sub">قائمة العملاء المسجلين</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">قائمة العملاء</div>
+        <span class="badge" id="customers-badge">0 عميل</span>
+      </div>
+      <div id="customers-table-cont"><div class="loading-state">جاري التحميل...</div></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<div id="toast"></div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+// =====================================================
+// ⚠️ ضع هنا بيانات Firebase الخاصة بك
+// =====================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCAtnIh_yP_yJER42Qaau13x9eDZFwAMbs",
+  authDomain: "elomda-store.firebaseapp.com",
+  projectId: "elomda-store",
+  storageBucket: "elomda-store.firebasestorage.app",
+  messagingSenderId: "518078514740",
+  appId: "1:518078514740:web:ff6032cca911355a0a2c61"
+};
+// =====================================================
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+let allOrders = [];
+let allProducts = [];
+let unsubOrders = null;
+let unsubProducts = null;
+
+// ── AUTH ──
+window.doLogin = async () => {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('login-err');
+  err.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'جاري الدخول...';
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    err.textContent = e.code === 'auth/invalid-credential' ? 'البريد أو كلمة المرور غلط' : 'حدث خطأ، حاول تاني';
+    btn.disabled = false;
+    btn.textContent = 'دخول';
+  }
+};
+
+window.doLogout = async () => {
+  await signOut(auth);
+};
+
+document.getElementById('login-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.doLogin();
+});
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-email-display').textContent = user.email;
+    startListeners();
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('login-btn').disabled = false;
+    document.getElementById('login-btn').textContent = 'دخول';
+    if (unsubOrders) unsubOrders();
+    if (unsubProducts) unsubProducts();
+  }
+});
+
+// ── REALTIME LISTENERS ──
+function startListeners() {
+  const ordersQ = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
+  unsubOrders = onSnapshot(ordersQ, snap => {
+    allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAll();
+  });
+
+  unsubProducts = onSnapshot(collection(db, 'products'), snap => {
+    allProducts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAll();
+  });
+}
+
+// ── RENDER ──
+function renderAll() {
+  const customers = [...new Map(allOrders.map(o => [o.phone, {
+    name: o.name, phone: o.phone, city: o.city,
+    count: allOrders.filter(x => x.phone === o.phone).length
+  }])).values()];
+
+  const revenue = allOrders.reduce((s, o) => s + (+o.total || 0), 0);
+  const pending = allOrders.filter(o => !o.status || o.status === 'pending').length;
+
+  document.getElementById('stat-orders').textContent = allOrders.length;
+  document.getElementById('stat-revenue').textContent = revenue.toLocaleString('ar-EG');
+  document.getElementById('stat-customers').textContent = customers.length;
+  document.getElementById('stat-products').textContent = allProducts.length;
+
+  document.getElementById('dash-orders-badge').textContent = allOrders.length + ' طلب';
+  document.getElementById('orders-badge').textContent = allOrders.length + ' طلب';
+  document.getElementById('customers-badge').textContent = customers.length + ' عميل';
+
+  const navBadge = document.getElementById('nav-orders-count');
+  if (pending > 0) { navBadge.textContent = pending; navBadge.style.display = 'inline'; }
+  else navBadge.style.display = 'none';
+
+  renderOrdersTable('dash-orders-table', allOrders.slice(0, 8));
+  renderOrdersTable('orders-table-cont', allOrders);
+  renderProducts();
+  renderCustomers(customers);
+}
+
+function renderOrdersTable(id, list) {
+  const el = document.getElementById(id);
+  if (!list.length) { el.innerHTML = '<div class="empty-state">لا توجد طلبات بعد</div>'; return; }
+  el.innerHTML = `<div style="overflow-x:auto"><table>
+    <thead><tr>
+      <th>الاسم</th><th>الهاتف</th><th>المنتج</th><th>المقاس</th><th>الإجمالي</th><th>الحالة</th><th>إجراء</th>
+    </tr></thead>
+    <tbody>${list.map(o => `<tr>
+      <td style="font-weight:600">${o.name || '-'}</td>
+      <td style="direction:ltr;text-align:right">${o.phone || '-'}</td>
+      <td style="color:var(--text-muted);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.product || '-'}</td>
+      <td>${o.size || '-'}</td>
+      <td style="color:var(--gold);font-weight:700">${(+o.total || 0).toLocaleString()} ج.م</td>
+      <td><span class="status ${o.status === 'done' ? 'done' : o.status === 'cancelled' ? 'cancelled' : 'pending'}">
+        ${o.status === 'done' ? '✅ تم التسليم' : o.status === 'cancelled' ? '❌ ملغي' : '⏳ قيد التنفيذ'}
+      </span></td>
+      <td><div class="actions-cell">
+        <button class="action-btn" onclick="cycleStatus('${o.id}','${o.status || 'pending'}')">تغيير</button>
+        <button class="action-btn del" onclick="delOrder('${o.id}')">حذف</button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function renderProducts() {
+  const el = document.getElementById('products-cont');
+  if (!allProducts.length) {
+    el.innerHTML = '<div class="empty-state" style="grid-column:1/-1">لا توجد منتجات. أضف منتجاً من القائمة.</div>';
+    return;
+  }
+  el.innerHTML = allProducts.map(p => `
+    <div class="product-card">
+      <div class="product-img">${p.images && p.images[0] ? `<img src="${p.images[0]}" alt="${p.name}">` : '👗'}</div>
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">${(+p.price).toLocaleString()} ج.م</div>
+        <div class="product-cat">${p.cat || ''} • مخزون: ${p.stock || 0}</div>
+        <div class="product-actions">
+          <button class="action-btn del" onclick="delProduct('${p.id}')">حذف</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderCustomers(customers) {
+  const el = document.getElementById('customers-table-cont');
+  if (!customers.length) { el.innerHTML = '<div class="empty-state">لا يوجد عملاء بعد</div>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr><th>الاسم</th><th>الهاتف</th><th>المحافظة</th><th>الطلبات</th></tr></thead>
+    <tbody>${customers.map(c => `<tr>
+      <td style="font-weight:600">${c.name || '-'}</td>
+      <td style="direction:ltr;text-align:right">${c.phone || '-'}</td>
+      <td>${c.city || '-'}</td>
+      <td><span class="badge">${c.count}</span></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// ── ACTIONS ──
+window.cycleStatus = async (id, current) => {
+  const states = ['pending', 'done', 'cancelled'];
+  const next = states[(states.indexOf(current) + 1) % 3];
+  try {
+    await updateDoc(doc(db, 'orders', id), { status: next });
+    toast('تم تغيير حالة الطلب', 'success');
+  } catch(e) { toast('حدث خطأ', 'error'); }
+};
+
+window.delOrder = async (id) => {
+  if (!confirm('هل تريد حذف هذا الطلب نهائياً؟')) return;
+  try {
+    await deleteDoc(doc(db, 'orders', id));
+    toast('تم حذف الطلب', 'success');
+  } catch(e) { toast('حدث خطأ', 'error'); }
+};
+
+window.delProduct = async (id) => {
+  if (!confirm('هل تريد حذف هذا المنتج نهائياً؟')) return;
+  try {
+    await deleteDoc(doc(db, 'products', id));
+    toast('تم حذف المنتج', 'success');
+  } catch(e) { toast('حدث خطأ', 'error'); }
+};
+
+let selectedFiles = [];
+window.previewImages = (input) => {
+  selectedFiles = Array.from(input.files);
+  const preview = document.getElementById('img-preview');
+  preview.innerHTML = '';
+  selectedFiles.forEach(f => {
+    const url = URL.createObjectURL(f);
+    const img = document.createElement('img');
+    img.src = url;
+    preview.appendChild(img);
+  });
+};
+
+window.addProduct = async () => {
+  const name = document.getElementById('p-name').value.trim();
+  const price = document.getElementById('p-price').value;
+  if (!name || !price) { toast('أدخل اسم المنتج والسعر', 'error'); return; }
+
+  const btn = document.getElementById('add-product-btn');
+  btn.disabled = true;
+  btn.textContent = 'جاري الرفع...';
+
+  try {
+    // Upload images to Firebase Storage
+    const imageUrls = [];
+    for (const file of selectedFiles) {
+      const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      imageUrls.push(url);
+    }
+
+    await addDoc(collection(db, 'products'), {
+      name,
+      price: +price,
+      cat: document.getElementById('p-cat').value,
+      stock: +document.getElementById('p-stock').value || 0,
+      colors: document.getElementById('p-colors').value,
+      sizes: document.getElementById('p-sizes').value,
+      desc: document.getElementById('p-desc').value,
+      images: imageUrls,
+      createdAt: serverTimestamp()
+    });
+
+    ['p-name','p-price','p-stock','p-colors','p-sizes','p-desc'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('img-preview').innerHTML = '';
+    document.getElementById('p-img-input').value = '';
+    selectedFiles = [];
+    toast('✅ تم إضافة المنتج بنجاح!', 'success');
+    gotoPage('products');
+  } catch(e) {
+    toast('حدث خطأ أثناء الرفع: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✅ إضافة المنتج للمتجر';
+  }
+};
+
+// ── NAVIGATION ──
+document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+  item.addEventListener('click', () => {
+    gotoPage(item.dataset.page);
+  });
+});
+
+window.gotoPage = (id) => {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const navItem = document.querySelector(`.nav-item[data-page="${id}"]`);
+  if (navItem) navItem.classList.add('active');
+};
+
+// ── TOAST ──
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  setTimeout(() => el.className = '', 3000);
+}
+</script>
+</body>
+</html>
