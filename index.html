@@ -847,25 +847,38 @@
                 }
             });
 
-            db.collection('orders').orderBy('timestamp', 'asc').onSnapshot(snapshot => {
-                snapshot.docChanges().forEach(change => {
+            const list = document.getElementById('notif-list');
+
+            db.collection('orders').orderBy('timestamp', 'desc').limit(10).onSnapshot(snapshot => {
+                if (isFirstLoad) {
+                    list.innerHTML = '';
+                    if (snapshot.empty) {
+                        list.innerHTML = '<div class="text-center py-20 text-gray-600 italic">لا توجد إشعارات جديدة</div>';
+                    }
+                }
+
+                snapshot.docChanges().reverse().forEach(change => {
                     if (change.type === 'added') {
                         const newOrder = change.doc.data();
-                        // Show notification only for newly added orders (not on initial load)
-                        if (!isFirstLoad) {
+                        
+                        // Create notification element
+                        const notifHtml = `<div class="bg-white/5 p-6 rounded-3xl border border-[#D4AF37]/30 mb-4 animate-[fadeIn_0.5s_ease-out]">
+                            <p class="text-xs font-bold text-[#D4AF37] mb-2 uppercase tracking-widest">${isFirstLoad ? 'طلب سابق' : 'طلب جديد! 🛍️'}</p>
+                            <p class="text-sm font-light text-gray-300">تم طلب ${newOrder.productName} بواسطة ${newOrder.customerName}.</p>
+                            <p class="text-[10px] text-gray-500 mt-2">${new Date(newOrder.timestamp).toLocaleString('ar-EG')}</p>
+                        </div>`;
+
+                        if (isFirstLoad) {
+                            list.innerHTML += notifHtml;
+                        } else {
+                            // New order during session
+                            if (list.innerHTML.includes('لا توجد إشعارات جديدة')) list.innerHTML = '';
+                            list.innerHTML = notifHtml + list.innerHTML;
+                            
                             unseenCount++;
                             document.title = `(${unseenCount}) طلب جديد! | Elomda`;
                             notifSound.play().catch(e => console.log('Audio prevented'));
-                            
                             document.getElementById('notif-dot').classList.remove('hidden');
-                            const list = document.getElementById('notif-list');
-                            if (list.innerHTML.includes('لا توجد إشعارات جديدة')) {
-                                list.innerHTML = '';
-                            }
-                            list.innerHTML = `<div class="bg-white/5 p-6 rounded-3xl border border-[#D4AF37]/30 mb-4 animate-[fadeIn_0.5s_ease-out]">
-                                <p class="text-xs font-bold text-[#D4AF37] mb-2 uppercase tracking-widest">طلب جديد! 🛍️</p>
-                                <p class="text-sm font-light text-gray-300">تم طلب ${newOrder.productName} بواسطة ${newOrder.customerName}.</p>
-                            </div>` + list.innerHTML;
                         }
                     }
                 });
