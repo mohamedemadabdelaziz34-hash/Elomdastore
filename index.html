@@ -1036,9 +1036,9 @@
 
             const data = {
                 product: currentProduct.name,
-                name: document.getElementById('cust-name').value,
-                phone: document.getElementById('cust-phone').value,
-                address: document.getElementById('cust-address').value,
+                name: document.getElementById('cust-name').value.trim(),
+                phone: document.getElementById('cust-phone').value.trim(),
+                address: document.getElementById('cust-address').value.trim(),
                 size: selectedOptions.size,
                 color: selectedOptions.color,
                 quantity: quantity,
@@ -1203,13 +1203,22 @@
             btn.innerText = 'جاري البحث...';
             
             try {
-                // Get the latest order for this phone
-                const snap = await db.collection('orders').where('phone', '==', phone).orderBy('createdAt', 'desc').limit(1).get();
+                // Get all orders for this phone to avoid composite index requirement
+                const snap = await db.collection('orders').where('phone', '==', phone).get();
                 result.classList.remove('hidden');
+                
                 if (snap.empty) {
                     result.innerHTML = `<p class="text-red-400 text-sm">عذراً، لم يتم العثور على طلبات لهذا الرقم.</p>`;
                 } else {
-                    const order = snap.docs[0].data();
+                    // Sort in JS to find the latest order
+                    const orders = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    orders.sort((a, b) => {
+                        const timeA = a.createdAt?.seconds || 0;
+                        const timeB = b.createdAt?.seconds || 0;
+                        return timeB - timeA;
+                    });
+                    
+                    const order = orders[0];
                     const status = order.status || 'pending';
                     const statusText = status === 'done' ? '✅ تم التسليم' : status === 'cancelled' ? '❌ ملغي' : '⏳ قيد التنفيذ';
                     const statusColor = status === 'done' ? '#639922' : status === 'cancelled' ? '#E24B4A' : '#D4AF37';
